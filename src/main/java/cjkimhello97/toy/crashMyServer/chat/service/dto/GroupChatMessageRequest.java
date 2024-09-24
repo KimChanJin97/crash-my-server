@@ -1,5 +1,6 @@
 package cjkimhello97.toy.crashMyServer.chat.service.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
@@ -10,6 +11,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Schema(title = "[ STOMP ] GroupChatMessageRequest : 그룹 채팅방 채팅 메시지 전송 요청 DTO")
 public class GroupChatMessageRequest {
 
     @NotNull
@@ -25,3 +27,4 @@ public class GroupChatMessageRequest {
         this.createdAt = LocalDateTime.now();
     }
 }
+
