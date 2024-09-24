@@ -7,6 +7,8 @@ import cjkimhello97.toy.crashMyServer.auth.controller.dto.TokenResponse;
 import cjkimhello97.toy.crashMyServer.auth.exception.AuthException;
 import cjkimhello97.toy.crashMyServer.auth.infrastructure.JwtProvider;
 import cjkimhello97.toy.crashMyServer.auth.service.dto.SignupRequest;
+import cjkimhello97.toy.crashMyServer.click.domain.Click;
+import cjkimhello97.toy.crashMyServer.click.repository.ClickRepository;
 import cjkimhello97.toy.crashMyServer.member.domain.Member;
 import cjkimhello97.toy.crashMyServer.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +25,7 @@ public class AuthService {
     private final JwtProvider jwtProvider;
     private final PasswordEncoder passwordEncoder;
     private final MemberRepository memberRepository;
+    private final ClickRepository clickRepository;
     private final RedisTokenService redisTokenService;
 
     @Transactional
@@ -40,6 +43,11 @@ public class AuthService {
                 .build();
         memberRepository.save(member);
 
+        Click click = Click.builder()
+                .member(member)
+                .count(Double.valueOf(0))
+                .build();
+        clickRepository.save(click);
         return signIn(nickname, password);
     }
 
