@@ -1,6 +1,7 @@
 package cjkimhello97.toy.crashMyServer.chat.controller.dto;
 
 import cjkimhello97.toy.crashMyServer.chat.domain.ChatRoom;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
@@ -11,6 +12,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Builder
+@Schema(title = "[ HTTP ] GroupChatRoomResponse : 그룹 채팅방 응답 DTO")
 public class GroupChatRoomResponse {
 
     private Long chatRoomId;
