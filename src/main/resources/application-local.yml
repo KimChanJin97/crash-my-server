@@ -1,0 +1,51 @@
+spring:
+  application:
+    name: crashMyServer
+
+  jpa:
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true
+        dialect: org.hibernate.dialect.MySQLDialect
+    hibernate:
+      ddl-auto: create
+
+  datasource:
+    url: ${DATASOURCE_URL_LOCAL}
+    driver-class-name: ${DATASOURCE_DRIVER_LOCAL}
+    username: ${DATASOURCE_USERNAME_LOCAL}
+    password: ${DATASOURCE_PASSWORD_LOCAL}
+
+  kafka:
+    consumer:
+      bootstrap-servers: ${BOOTSTRAP_SERVERS_LOCAL}
+      auto-offset-reset: ${AUTO_OFFSET_REST_LOCAL}
+      key-deserializer: ${KEY_DESERIALIZER_LOCAL}
+      value-deserializer: ${VALUE_DESERIALIZER_LOCAL}
+      properties:
+        spring:
+          json:
+            trusted:
+              packages: "*"
+    producer:
+      bootstrap-servers: ${BOOTSTRAP_SERVERS_LOCAL}
+      key-serializer: ${KEY_SERIALIZER_LOCAL}
+      value-serializer: ${VALUE_SERIALIZER_LOCAL}
+
+  data:
+    redis:
+      host: ${REDIS_HOST_LOCAL}
+      port: ${REDIS_PORT_LOCAL}
+      repositories:
+        enabled: false
+    mongodb:
+      host: ${MONGODB_HOST_LOCAL}
+      port: ${MONGODB_PORT_LOCAL}
+      authentication-database: ${MONGODB_AUTH_DB_LOCAL}
+      database: ${MONGODB_DB_LOCAL}
+      username: ${MONGODB_USERNAME_LOCAL}
+      password: ${MONGODB_PASSWORD_LOCAL}
+
+kafka:
+  broker: ${KAFKA_BROKER_LOCAL}
