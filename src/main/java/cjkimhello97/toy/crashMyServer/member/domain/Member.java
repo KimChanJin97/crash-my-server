@@ -1,11 +1,21 @@
 package cjkimhello97.toy.crashMyServer.member.domain;
 
+import static jakarta.persistence.FetchType.LAZY;
+
+import cjkimhello97.toy.crashMyServer.chat.domain.ChatRoom;
 import cjkimhello97.toy.crashMyServer.common.domain.BaseEntity;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import java.util.HashSet;
+import java.util.Set;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -31,4 +41,21 @@ public class Member extends BaseEntity {
 
     @Column(name = "password")
     private String password;
+
+    @ManyToMany(cascade = CascadeType.ALL, fetch = LAZY)
+    @JsonManagedReference
+    @JoinTable(
+            name = "member_chat_room",
+            joinColumns = {@JoinColumn(name = "member_id")},
+            inverseJoinColumns = {@JoinColumn(name = "chat_room_id")}
+    )
+    private Set<ChatRoom> chatRooms = new HashSet<>();
+
+    public void addChatRoom(ChatRoom chatRoom) {
+        this.chatRooms.add(chatRoom);
+    }
+
+    public void removeChatRoom(ChatRoom chatRoom) {
+        this.chatRooms.remove(chatRoom);
+    }
 }
