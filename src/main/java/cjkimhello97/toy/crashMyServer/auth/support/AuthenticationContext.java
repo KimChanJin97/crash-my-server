@@ -1,8 +1,8 @@
 package cjkimhello97.toy.crashMyServer.auth.support;
 
-import static com.cjkim.crashMyServer.auth.exception.AuthExceptionType.UNAUTHORIZED;
+import static cjkimhello97.toy.crashMyServer.auth.exception.AuthExceptionType.UNAUTHORIZED;
 
-import com.cjkim.crashMyServer.auth.exception.AuthException;
+import cjkimhello97.toy.crashMyServer.auth.exception.AuthException;
 import java.util.Objects;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.RequestScope;

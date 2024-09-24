@@ -1,12 +1,12 @@
 package cjkimhello97.toy.crashMyServer.auth.infrastructure;
 
-import static com.cjkim.crashMyServer.auth.exception.AuthExceptionType.EXPIRED_TOKEN;
-import static com.cjkim.crashMyServer.auth.exception.AuthExceptionType.INVALID_SIGNATURE;
-import static com.cjkim.crashMyServer.auth.exception.AuthExceptionType.INVALID_TOKEN;
-import static com.cjkim.crashMyServer.auth.exception.AuthExceptionType.MALFORMED_TOKEN;
+import static cjkimhello97.toy.crashMyServer.auth.exception.AuthExceptionType.EXPIRED_TOKEN;
+import static cjkimhello97.toy.crashMyServer.auth.exception.AuthExceptionType.INVALID_SIGNATURE;
+import static cjkimhello97.toy.crashMyServer.auth.exception.AuthExceptionType.INVALID_TOKEN;
+import static cjkimhello97.toy.crashMyServer.auth.exception.AuthExceptionType.MALFORMED_TOKEN;
 
-import com.cjkim.crashMyServer.auth.exception.AuthException;
-import com.cjkim.crashMyServer.auth.service.RedisTokenService;
+import cjkimhello97.toy.crashMyServer.auth.exception.AuthException;
+import cjkimhello97.toy.crashMyServer.auth.service.RedisTokenService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
