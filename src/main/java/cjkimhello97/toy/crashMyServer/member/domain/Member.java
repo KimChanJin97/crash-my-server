@@ -42,6 +42,7 @@ public class Member extends BaseEntity {
     @Column(name = "password")
     private String password;
 
+    @Builder.Default
     @ManyToMany(cascade = CascadeType.ALL, fetch = LAZY)
     @JsonManagedReference
     @JoinTable(
