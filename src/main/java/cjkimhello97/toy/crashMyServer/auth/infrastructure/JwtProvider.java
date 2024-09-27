@@ -12,12 +12,14 @@ import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
+import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import java.security.Key;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
+import javax.crypto.SecretKey;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -75,7 +77,7 @@ public class JwtProvider {
 
     public Long extractId(String token) {
         try {
-            Claims claims = createClaims(token);
+            Claims claims = extractClaims(token); // 80번째 줄
             return Long.parseLong(claims.getId());
         } catch (ExpiredJwtException e) {
             throw new AuthException(EXPIRED_TOKEN);
@@ -90,7 +92,7 @@ public class JwtProvider {
 
     public Long extractIdWithoutExpiration(String token) {
         try {
-            Claims claims = createClaims(token);
+            Claims claims = extractClaims(token);
             return Long.parseLong(claims.getId());
         } catch (ExpiredJwtException e) {
             Claims expiredClaims = e.getClaims();
@@ -104,11 +106,15 @@ public class JwtProvider {
         }
     }
 
-    private Claims createClaims(String token) {
+    private SecretKey getSigningKey() {
+        return Keys.hmacShaKeyFor(this.secret.getBytes());
+    }
+
+    private Claims extractClaims(String token) {
         return Jwts.parser()
-                .setSigningKey(secret.getBytes())
+                .verifyWith(this.getSigningKey())
                 .build()
-                .parseClaimsJws(token)
-                .getBody();
+                .parseSignedClaims(token) // 118번째
+                .getPayload();
     }
 }
