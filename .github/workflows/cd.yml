@@ -34,4 +34,4 @@ jobs:
         run: |
           echo "${{ secrets.DOCKER_COMPOSE_PROD }}" > docker-compose-prod.yml
           docker-compose -f docker-compose-prod.yml down app
-          docker-compose -f docker-compose-prod.yml up -d app
+          docker-compose -f docker-compose-prod.yml up -d --force-recreate app
