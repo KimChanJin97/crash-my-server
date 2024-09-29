@@ -38,9 +38,9 @@ jobs:
               sudo docker rm $CONTAINER_ID
             fi
             
-            docker pull ${{ secrets.DOCKER_HUB_ID }}/${{ secrets.DOCKER_HUB_REPO }}:latest
-            docker-compose -f docker-compose-prod.yml up -d
-            docker image prune -f
+            echo "${{ secrets.DOCKER_COMPOSE_PROD_YML }}" > docker-compose-prod.yml
+            sudo docker-compose -f docker-compose-prod.yml up -d
+            sudo docker image prune -f
 
       - name: Remove Github Actions IP From Security Group
         run: |
