@@ -42,6 +42,7 @@ jobs:
             fi
             
             echo "${{ secrets.DOCKER_COMPOSE_PROD_YML }}" > docker-compose-prod.yml
+            sudo docker-compose -f docker-compose-prod.yml pull
             sudo docker-compose -f docker-compose-prod.yml up -d
             sudo docker image prune -f
 
