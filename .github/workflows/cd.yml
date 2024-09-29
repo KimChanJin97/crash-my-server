@@ -27,16 +27,6 @@ jobs:
         run: |
           aws ec2 authorize-security-group-ingress --group-id ${{ secrets.AWS_SG_ID }} --protocol tcp --port 22 --cidr ${{ steps.ip.outputs.ipv4 }}/32
 
-      - name: Make application config files
-        run: |
-          cd ./src/main/resources
-          
-          touch ./application.yml
-          echo "${{ secrets.APPLICATION_YML }}" > ./application.yml
-          
-          touch ./application-prod.yml
-          echo "${{ secrets.APPLICATION_PROD_YML }}" > ./application-prod.yml
-
       - name: Deploy to EC2
         uses: appleboy/ssh-action@master
         with:
