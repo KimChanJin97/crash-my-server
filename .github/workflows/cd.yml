@@ -16,7 +16,6 @@ jobs:
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
           port: ${{ secrets.EC2_SSH_PORT }}
-          envs: GITHUB_SHA
           script: |
             docker stop app
             docker rm app
