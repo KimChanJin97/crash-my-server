@@ -34,13 +34,8 @@ jobs:
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            CONTAINER_ID=$(sudo docker ps -q --filter "name=app")
-            
-            if [ ! -z "$CONTAINER_ID" ]; then
-              sudo docker stop $CONTAINER_ID
-              sudo docker rm $CONTAINER_ID
-            fi
-            
+            sudo docker ps -q | grep -v "$(sudo docker ps -q --filter "name=ubuntu-nginx-1")" | xargs -r sudo docker stop
+                        
             echo "${{ secrets.DOCKER_COMPOSE_PROD_YML }}" > docker-compose-prod.yml
             sudo docker-compose -f docker-compose-prod.yml pull
             sudo docker-compose -f docker-compose-prod.yml up -d
