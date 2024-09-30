@@ -34,7 +34,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@Tag(name = "2. 그룹 채팅")
+@Tag(name = "그룹 채팅방 입장 / 채팅 메시지 전송 / 채팅방 퇴장 / 채팅 메시지 조회")
 @RestController
 @CrossOrigin
 @RequiredArgsConstructor

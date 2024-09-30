@@ -20,8 +20,8 @@ public class GroupChatMessageRequest {
     String content;
     @NotNull
     Long chatRoomId;
-    Long senderId; // can null
-    LocalDateTime createdAt; // can null
+    Long senderId;
+    LocalDateTime createdAt;
 
     public void setCreatedAtNow() {
         this.createdAt = LocalDateTime.now();
