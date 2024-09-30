@@ -5,7 +5,7 @@ import static cjkimhello97.toy.crashMyServer.click.utils.CountFormatter.format;
 import cjkimhello97.toy.crashMyServer.auth.support.AuthMember;
 import cjkimhello97.toy.crashMyServer.click.domain.Click;
 import cjkimhello97.toy.crashMyServer.click.service.ClickService;
-import cjkimhello97.toy.crashMyServer.click.service.dto.ClickResponse;
+import cjkimhello97.toy.crashMyServer.click.controller.dto.ClickResponse;
 import cjkimhello97.toy.crashMyServer.common.exception.dto.ExceptionResponse;
 import cjkimhello97.toy.crashMyServer.kafka.dto.KafkaClickRankRequest;
 import cjkimhello97.toy.crashMyServer.kafka.dto.KafkaClickRequest;
@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Tag(name = "클릭 조회(본인 클릭 + 클릭 랭크) / 클릭(본인 클릭 횟수+ 클릭 랭크)")
 @RestController
 @RequestMapping("/api/v1/click")
 @RequiredArgsConstructor
