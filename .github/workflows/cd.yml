@@ -34,7 +34,13 @@ jobs:
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            sudo docker stop app mysql redis mongodb zookeeper kafka 
+            sudo docker down app
+            sudo docker down mysql
+            sudo docker down redis
+            sudo docker down mongodb
+            sudo docker down kafka
+            sudo docker down zookeeper
+            
             echo "${{ secrets.DOCKER_COMPOSE_PROD_YML }}" > docker-compose-prod.yml
             sudo docker-compose -f docker-compose-prod.yml pull
             sudo docker-compose -f docker-compose-prod.yml up -d
