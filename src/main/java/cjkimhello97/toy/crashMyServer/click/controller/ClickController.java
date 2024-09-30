@@ -36,23 +36,41 @@ public class ClickController {
             summary = "[ HTTP 요청 + STOMP 응답 ] 클릭 API",
             description = """
                     STOMP 응답을 받기 위한 조건
-                     1. 웹소켓 연결 : ws://도메인:8080/ws URL을 연결한 상태이어야 합니다.
-                     2. 웹소켓 구독 1 : /sub/click/{본인 닉네임} URL을 구독한 상태이어야 합니다.
-                     3. 웹소켓 구독 2 : /sub/click-rank URL을 구독한 상태이어야 합니다.
+                     - 웹소켓 연결 : wss://crash-my-server.site/ws URL을 연결한 상태이어야 합니다.
+                     - 웹소켓 구독 1 : /sub/click/{본인 닉네임} URL을 구독한 상태이어야 합니다.
+                     - 웹소켓 구독 2 : /sub/click-rank URL을 구독한 상태이어야 합니다.
                     주의사항
-                     1-1. 웹소켓 구독 1 URL 을 구독한 본인에게만 HTTP 응답이 아니라 STOMP 응답이 옵니다. (* 주의 본인 클릭 횟수는 본인만 보는 로직)
-                     1-2. 메시지 응답 형식 : {"nickname":"aaa","count":"1"}
-                     2-1. 웹소켓 구독 2 URL 을 구독한 모든 클라이언트에게 HTTP 응답이 아니라 STOMP 응답이 옵니다. (* 주의 클릭 랭크는 모두가 보는 로직)
-                     2-2. 메시지 응답 형식 : {"clickRank":{"aaa":"1", "bbb":"2"}}  (* 주의 리스트 내림차순 정렬되지 않을 가능성 존재하므로 정렬 필수)
+                     - 웹소켓 구독 1 URL( /sub/click/{본인 닉네임} )을 구독한 본인에게만 STOMP 응답이 옵니다.
+                     - STOMP 응답 형식 : {"nickname":"aaa","count":"1"}
+                     - 웹소켓 구독 2 URL( /sub/click-rank )을 구독한 모든 클라이언트들에게 STOMP 응답이 옵니다.
+                     - STOMP 응답 형식 : {"clickRank":{"aaa":"1","bbb":"2"}} (* 주의. 리스트는 정렬되지 않은 상태로 반환되므로 내림차순 정렬하여 클릭 랭크에 렌더링)
                     """
     )
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
-                    description = "성공"),
+                    description = """
+                            - 웹소켓 구독 1 URL( /sub/click/{본인 닉네임} )로 도착하는 STOMP 응답 형식 : {"nickname":"aaa","count":"1"}
+                            - 웹소켓 구독 2 URL( /sub/click-rank )로 도착하는 STOMP 응답 형식 : {"clickRank":{"aaa":"1","bbb":"2"}}
+                            """),
             @ApiResponse(
-                    responseCode = "400, 401, 404",
-                    description = "클릭 예외(400), JWT 검증/파싱 예외(401, 404)",
+                    responseCode = "400",
+                    description = """
+                            - 설명 : 클릭한 적이 없는데 클릭 횟수를 조회할 때 반환될 예외 DTO 입니다. (발생 확률 없음)
+                            - 예외 형식 : { "exceptionCode": 5001, "message":"NEVER CLICKED" }
+                            """
+            ),
+            @ApiResponse(
+                    responseCode = "401, 404",
+                    description = """
+                            - 설명 : 토큰이 위변조될 경우 반환될 예외 DTO 입니다.
+                            - 예외 형식 1 : { "exceptionCode": 4001, "message":"FAIL TO AUTHORIZATION" }
+                            - 예외 형식 2 : { "exceptionCode": 4002, "message":"TOKEN EXPIRED" }
+                            - 예외 형식 3 : { "exceptionCode": 4003, "message":"INVALID SIGNATURE" }
+                            - 예외 형식 4 : { "exceptionCode": 4004, "message":"FORGED TOKEN" }
+                            - 예외 형식 5 : { "exceptionCode": 4005, "message":"INVALID TOKEN" }
+                            - 예외 형식 6 : { "exceptionCode": 4006, "message":"MEMBER NOT FOUND" }
+                            """,
                     content = {@Content(schema = @Schema(implementation = ExceptionResponse.class))})
     })
     public void click(@AuthMember Long memberId) {

@@ -55,7 +55,7 @@ public class AuthService {
         Member member = memberRepository.findByNickname(nickname).get();
         String savedNickname = member.getNickname();
         String savedPassword = member.getPassword();
-        // 닉네임 존재 && 비밀번호 존재 X = 예외
+        // 닉네임 존재 O && 비밀번호 존재 X = 예외
         if (savedNickname.equals(savedNickname) && !passwordEncoder.matches(password, savedPassword)) {
             throw new AuthException(WRONG_PASSWORD);
         }

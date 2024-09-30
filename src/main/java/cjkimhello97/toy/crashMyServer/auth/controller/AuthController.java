@@ -29,15 +29,31 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/sign-up")
-    @Operation(summary = "[ HTTP ] 회원가입/로그인 API")
+    @Operation(
+            summary = "[ HTTP ] 회원가입/로그인 API",
+            description = """
+                    회원가입/로그인 로직
+                    - 로직 1. 닉네임 존재 X = 회원가입 후 로그인 처리
+                    - 로직 2. 닉네임 존재 O && 비밀번호 존재 O = 로그인 처리
+                    - 로직 3. 닉네임 존재 O && 비밀번호 존재 X = 예외
+                    """
+    )
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
-                    description = "성공",
+                    description = """
+                           - 설명 : 발급받은 액세스 토큰은 인증 헤더에, 리프레시 토큰은 로컬 스토리지에 저장해야 합니다. 
+                                   액세스 토큰은 이후 요청부터 Bearer 방식(Bearer aaa.bbb.ccc)으로 담겨져 사용되어야 합니다. 
+                                   리프레시 토큰은 토큰 재발급시 로컬 스토리지로부터 꺼내어 사용되어야 합니다. 
+                           - 응답 형식(로직 1,2) : { "accessToken": "aaa.bbb.ccc", "refreshToken": "ddd.eee.fff" }
+                            """,
                     content = {@Content(schema = @Schema(implementation = SigninResponse.class))}),
             @ApiResponse(
-                    responseCode = "400, 401, 404",
-                    description = "비밀번호 예외(400), JWT 검증/파싱 예외(401, 404)",
+                    responseCode = "400",
+                    description = """
+                            - 설명 : 닉네임은 존재하지만 비밀번호가 존재하지 않을 때 반환될 예외 DTO 입니다.
+                            - 예외 형식(로직 3) : { "exceptionCode": 4007, "message": "WRONG PASSWORD" }
+                            """,
                     content = {@Content(schema = @Schema(implementation = ExceptionResponse.class))})
     })
     public ResponseEntity<SigninResponse> signUp(
@@ -47,15 +63,32 @@ public class AuthController {
     }
 
     @PostMapping("/reissue")
-    @Operation(summary = "[ HTTP ] 토큰 재발급 API")
+    @Operation(
+            summary = "[ HTTP ] 토큰 재발급 API",
+            description = """
+                    토큰 재발급 로직
+                    - 로컬 스토리지에 저장해두었던 리프레시 토큰를 JSON 형식으로 요청 바디에 실어 요청해야 합니다.
+                    """
+    )
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
-                    description = "성공",
+                    description = """
+                            - 설명 : 토큰 재발급 요청이 정상적으로 이뤄져 반환될 토큰 응답 DTO 입니다. 
+                            - 응답 형식 : 200 { "accessToken": "aaa.bbb.ccc", "refreshToken": "ddd.eee.fff" }
+                            """,
                     content = {@Content(schema = @Schema(implementation = TokenResponse.class))}),
             @ApiResponse(
                     responseCode = "401, 404",
-                    description = "JWT 검증/파싱 예외(401, 404)",
+                    description = """
+                            - 설명 : 토큰이 위변조될 경우 반환될 예외 DTO 입니다.
+                            - 예외 형식 1 : { "exceptionCode": 4001, "message":"FAIL TO AUTHORIZATION" }
+                            - 예외 형식 2 : { "exceptionCode": 4002, "message":"TOKEN EXPIRED" }
+                            - 예외 형식 3 : { "exceptionCode": 4003, "message":"INVALID SIGNATURE" }
+                            - 예외 형식 4 : { "exceptionCode": 4004, "message":"FORGED TOKEN" }
+                            - 예외 형식 5 : { "exceptionCode": 4005, "message":"INVALID TOKEN" }
+                            - 예외 형식 6 : { "exceptionCode": 4006, "message":"MEMBER NOT FOUND" }
+                            """,
                     content = {@Content(schema = @Schema(implementation = ExceptionResponse.class))})
     })
     public ResponseEntity<TokenResponse> reissueTokens(
