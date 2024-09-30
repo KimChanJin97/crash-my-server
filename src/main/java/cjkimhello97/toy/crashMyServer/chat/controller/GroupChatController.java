@@ -71,11 +71,11 @@ public class GroupChatController {
             summary = "[ HTTP 요청 + STOMP 응답 ] 그룹 채팅방 입장 API",
             description = """
                     STOMP 응답을 받기 위한 조건
-                     1. 웹소켓 연결 : ws://도메인:8080/ws URL을 연결한 상태이어야 합니다.
-                     2. 웹소켓 구독 : /sub/enter/1 URL을 구독한 상태이어야 있어야 합니다. (* 주의 chatRoomId 1 고정)
+                     - 웹소켓 연결 : wss://crash-my-server.site/ws URL을 연결한 상태이어야 합니다.
+                     - 웹소켓 구독 : /sub/enter/1 URL을 구독한 상태이어야 있어야 합니다. (* 주의. chatRoomId 1 고정)
                     주의사항
-                     1. 구독한 모든 클라이언트에게 HTTP 응답이 아니라 STOMP 응답이 옵니다.
-                     2. 메시지 응답 형식 : {"senderNickname":"bbb","senderId":2,"chatRoomId":1,"content":"bbb 님이 입장하셨습니다!","createdAt":null}
+                     - 구독한 모든 클라이언트에게 HTTP 응답이 아니라 STOMP 응답이 옵니다.
+                     - STOMP 응답 형식 : {"senderNickname":"bbb","senderId":2,"chatRoomId":1,"content":"bbb 님이 입장하셨습니다!","createdAt":null}
                     """
     )
     @ApiResponses(value = {
@@ -83,8 +83,24 @@ public class GroupChatController {
                     responseCode = "200",
                     description = "성공"),
             @ApiResponse(
-                    responseCode = "400, 401, 404, 500",
-                    description = "그룹 채팅방 예외(400, 500), JWT 검증/파싱 예외(401, 404)",
+                    responseCode = "500",
+                    description = """
+                            - 설명 : 채팅방이 존재하지 않거나, 채팅방을 퇴장했는데 채팅 내역을 조회할 경우 반환될 예외 DTO 입니다.
+                            - 예외 형식 1 : { "exceptionCode": 3001, "message":"CHAT ROOM NOT EXIST" }
+                            - 예외 형식 2 : { "exceptionCode": 3002, "message":"ALREADY LEFT CHAT ROOM" }
+                            """,
+                    content = {@Content(schema = @Schema(implementation = ExceptionResponse.class))}),
+            @ApiResponse(
+                    responseCode = "401, 404",
+                    description = """
+                            - 설명 : 토큰이 위변조될 경우 반환될 예외 DTO 입니다.
+                            - 예외 형식 1 : { "exceptionCode": 4001, "message":"FAIL TO AUTHORIZATION" }
+                            - 예외 형식 2 : { "exceptionCode": 4002, "message":"TOKEN EXPIRED" }
+                            - 예외 형식 3 : { "exceptionCode": 4003, "message":"INVALID SIGNATURE" }
+                            - 예외 형식 4 : { "exceptionCode": 4004, "message":"FORGED TOKEN" }
+                            - 예외 형식 5 : { "exceptionCode": 4005, "message":"INVALID TOKEN" }
+                            - 예외 형식 6 : { "exceptionCode": 4006, "message":"MEMBER NOT FOUND" }
+                            """,
                     content = {@Content(schema = @Schema(implementation = ExceptionResponse.class))})
     })
     public ResponseEntity<Void> enterGroupChatRoom(
@@ -109,11 +125,51 @@ public class GroupChatController {
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
-                    description = "성공",
+                    description = """
+                            - 설명 : 채팅 내역 조회 요청이 정상적으로 이뤄져 반환될 DTO 입니다. DTO 의 value 는 리스트 형태입니다. 
+                            - 응답 형식 : { 
+                                            "groupChatMessageResponses": [ 
+                                                { 
+                                                    "id": "해쉬값",
+                                                    "senderNickname": "ccc",
+                                                    "content": "안녕하세요1",
+                                                    "createdAt": "2024-09024T00:25:48.088"
+                                                }, 
+                                                {
+                                                    "id": "해쉬값",
+                                                    "senderNickname": "ccc",
+                                                    "content": "안녕하세요2",
+                                                    "createdAt": "2024-09024T00:26:01.244"
+                                                }
+                                            ] 
+                                        }                               
+                            """,
                     content = {@Content(schema = @Schema(implementation = GroupChatMessageResponses.class))}),
             @ApiResponse(
-                    responseCode = "400, 401, 404, 500",
-                    description = "그룹 채팅방 예외(400, 500), JWT 검증/파싱 예외(401, 404)",
+                    responseCode = "500",
+                    description = """
+                            - 설명 : 채팅방이 존재하지 않을 경우 반환될 예외 DTO 입니다.
+                            - 예외 형식 : { "exceptionCode": 3001, "message":"FAIL TO AUTHORIZATION" }
+                            """,
+                    content = {@Content(schema = @Schema(implementation = ExceptionResponse.class))}),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = """
+                            - 설명 : 채팅방을 퇴장했지만 채팅 내역을 조회할 경우 반환될 예외 DTO 입니다. 채팅 내역을 조회하려면 채팅방에 먼저 입장해야 합니다.
+                            - 예외 형식 : { "exceptionCode": 3002, "message":"ALREADY LEFT CHAT ROOM" }
+                            """,
+                    content = {@Content(schema = @Schema(implementation = ExceptionResponse.class))}),
+            @ApiResponse(
+                    responseCode = "401, 404",
+                    description = """
+                            - 설명 : 토큰이 위변조될 경우 반환될 예외 DTO 입니다.
+                            - 예외 형식 1 : { "exceptionCode": 4001, "message":"FAIL TO AUTHORIZATION" }
+                            - 예외 형식 2 : { "exceptionCode": 4002, "message":"TOKEN EXPIRED" }
+                            - 예외 형식 3 : { "exceptionCode": 4003, "message":"INVALID SIGNATURE" }
+                            - 예외 형식 4 : { "exceptionCode": 4004, "message":"FORGED TOKEN" }
+                            - 예외 형식 5 : { "exceptionCode": 4005, "message":"INVALID TOKEN" }
+                            - 예외 형식 6 : { "exceptionCode": 4006, "message":"MEMBER NOT FOUND" }
+                            """,
                     content = {@Content(schema = @Schema(implementation = ExceptionResponse.class))})
     })
     public ResponseEntity<GroupChatMessageResponses> getGroupChatMessages(
@@ -128,26 +184,23 @@ public class GroupChatController {
     @Operation(
             summary = "[ STOMP 요청/응답 ] 그룹 채팅방 채팅 메시지 전송 API",
             description = """
-                    API 사용 방법
-                     STOMP 응답을 받기 위한 조건
-                     1. 웹소켓 연결 : ws://도메인:8080/ws URL을 연결한 상태이어야 합니다.
-                     2. 웹소켓 구독 : /sub/group-chat/1 URL을 구독한 상태이어야 있어야 합니다. (* 주의 chatRoomId 1 고정)
-                     3. 웹소켓 발행 : /pub/group-chat-messages URL로 메시지를 발행해야 합니다.
-                     4. 메시지 요청 형식 : {"senderNickname":"ccc","chatRoomId":1,"content":"안녕하세요1"} (* 주의 chatRoomId 1 고정)
+                    STOMP 응답을 받기 위한 조건
+                     - 웹소켓 연결 : wss://crash-my-server.site/ws URL을 연결한 상태이어야 합니다.
+                     - 웹소켓 구독 : /sub/group-chat/1 URL을 구독한 상태이어야 있어야 합니다. (* 주의. chatRoomId 1 고정)
+                     - 웹소켓 발행 : /pub/group-chat-messages URL로 메시지를 발행해야 합니다. (* 주의. 웹소켓 구독이 전제되어야 웹소켓 발행했을 때 메시지가 채팅방에 뿌려짐)
+                     - STOMP 요청(발행) 형식 : {"senderNickname":"ccc","chatRoomId":1,"content":"안녕하세요1"} (* 주의. chatRoomId 1 고정)
                     주의사항
-                     1. 구독한 모든 클라이언트에게 HTTP 응답이 아니라 STOMP 응답이 옵니다.
-                     2. 메시지 응답 형식 :  {"senderNickname":"ccc","senderId":3,"chatRoomId":1,"content":"안녕하세요1","createdAt":"2024-09-24T00:25:48.088022"}
-                     """
+                     - 웹소켓 구독 URL( /sub/group-chat/1 )을 구독한 모든 클라이언트에게 STOMP 응답이 옵니다.
+                     - STOMP 응답 형식 : {"senderNickname":"ccc","senderId":3,"chatRoomId":1,"content":"안녕하세요1","createdAt":"2024-09-24T00:25:48.088022"}
+                    """
     )
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
-                    description = "성공",
+                    description = """
+                            - 웹소켓 구독 URL( /sub/group-chat/1 )로 도착하는 STOMP 응답 형식 : {"senderNickname":"ccc","senderId":3,"chatRoomId":1,"content":"안녕하세요1","createdAt":"2024-09-24T00:25:48.088022"}
+                            """,
                     content = {@Content(schema = @Schema(implementation = GroupChatMessageResponses.class))}),
-            @ApiResponse(
-                    responseCode = "400, 401, 404, 500",
-                    description = "그룹 채팅방 예외(400, 500), JWT 검증/파싱 예외(401, 404)",
-                    content = {@Content(schema = @Schema(implementation = ExceptionResponse.class))})
     })
     public void sendGroupChatMessage(
             @Payload GroupChatMessageRequest groupChatMessageRequest
@@ -166,20 +219,30 @@ public class GroupChatController {
             summary = "[ HTTP 요청 + STOMP 응답 ] 그룹 채팅방 퇴장 API",
             description = """
                     STOMP 응답을 받기 위한 조건
-                     1. 웹소켓 연결 : ws://도메인:8080/ws URL을 연결한 상태이어야 합니다.
-                     2. 웹소켓 구독 : /sub/leave/1 URL을 구독한 상태이어야 있어야 합니다. (* 주의 chatRoomId 1 고정)
+                     - 웹소켓 연결 : wss://crash-my-server.site/ws URL을 연결한 상태이어야 합니다.
+                     - 웹소켓 구독 : /sub/leave/1 URL을 구독한 상태이어야 있어야 합니다. (* 주의. chatRoomId 1 고정)
                     주의사항
-                     1. 구독한 모든 클라이언트에게 HTTP 응답이 아니라 STOMP 응답이 옵니다.
-                     2. 메시지 응답 형식 : {"senderNickname":"bbb","senderId":2,"chatRoomId":1,"content":"bbb 님이 퇴장하셨습니다!","createdAt":null}
+                     - 웹소켓 구독 URL( /sub/leave/1 )을 구독한 모든 클라이언트에게 STOMP 응답이 옵니다.
+                     - STOMP 응답 형식 : {"senderNickname":"bbb","senderId":2,"chatRoomId":1,"content":"bbb 님이 퇴장하셨습니다!","createdAt":null}
                     """
     )
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
-                    description = "성공"),
+                    description = """
+                            - 웹소켓 구독 URL( /sub/leave/1 )로 도착하는 STOMP 응답 형식 : {"senderNickname":"bbb","senderId":2,"chatRoomId":1,"content":"bbb 님이 퇴장하셨습니다!","createdAt":null}
+                            """),
             @ApiResponse(
-                    responseCode = "400, 401, 404, 500",
-                    description = "그룹 채팅방 예외(400, 500), JWT 검증/파싱 예외(401, 404)",
+                    responseCode = "401, 404",
+                    description = """
+                            - 설명 : 토큰이 위변조될 경우 반환될 예외 DTO 입니다.
+                            - 예외 형식 1 : { "exceptionCode": 4001, "message":"FAIL TO AUTHORIZATION" }
+                            - 예외 형식 2 : { "exceptionCode": 4002, "message":"TOKEN EXPIRED" }
+                            - 예외 형식 3 : { "exceptionCode": 4003, "message":"INVALID SIGNATURE" }
+                            - 예외 형식 4 : { "exceptionCode": 4004, "message":"FORGED TOKEN" }
+                            - 예외 형식 5 : { "exceptionCode": 4005, "message":"INVALID TOKEN" }
+                            - 예외 형식 6 : { "exceptionCode": 4006, "message":"MEMBER NOT FOUND" }
+                            """,
                     content = {@Content(schema = @Schema(implementation = ExceptionResponse.class))})
     })
     public ResponseEntity<Void> leaveGroupChatRoom(

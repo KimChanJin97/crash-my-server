@@ -7,7 +7,7 @@ import cjkimhello97.toy.crashMyServer.common.exception.support.Status;
 
 public enum ClickExceptionType implements ExceptionType {
 
-    CLICK_NOT_FOUND(BAD_REQUEST, 5001, "클릭한 적이 없습니다."),
+    CLICK_NOT_FOUND(BAD_REQUEST, 5001, "NEVER CLICKED"),
     ;
 
     private final Status status;
