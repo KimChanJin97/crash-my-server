@@ -28,7 +28,7 @@ public class ClickService {
         return clickRepository.findTop10ClicksByCountDesc(PageRequest.of(0, 10));
     }
 
-    private Click getClickByMemberId(Long memberId) {
+    public Click getClickByMemberId(Long memberId) {
         return clickRepository.findByMemberMemberId(memberId)
                 .orElseThrow(() -> new ClickException(ClickExceptionType.CLICK_NOT_FOUND));
     }
