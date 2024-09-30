@@ -5,6 +5,7 @@ import static cjkimhello97.toy.crashMyServer.click.utils.CountFormatter.format;
 import cjkimhello97.toy.crashMyServer.auth.support.AuthMember;
 import cjkimhello97.toy.crashMyServer.click.domain.Click;
 import cjkimhello97.toy.crashMyServer.click.service.ClickService;
+import cjkimhello97.toy.crashMyServer.click.service.dto.ClickResponse;
 import cjkimhello97.toy.crashMyServer.common.exception.dto.ExceptionResponse;
 import cjkimhello97.toy.crashMyServer.kafka.dto.KafkaClickRankRequest;
 import cjkimhello97.toy.crashMyServer.kafka.dto.KafkaClickRequest;
@@ -17,7 +18,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -30,6 +33,32 @@ public class ClickController {
     private final ClickService clickService;
     private final KafkaTemplate<String, KafkaClickRequest> kafkaClickRequestKafkaTemplate;
     private final KafkaTemplate<String, KafkaClickRankRequest> kafkaClickRankRequestKafkaTemplate;
+
+    @GetMapping
+    @Operation(
+            summary = "[ HTTP 요청/응답 ] 클릭 조회 API"
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = """
+                    - 설명 : 메인 페이지 입장시 반환될 본인 클릭 횟수 DTO 와 와 클릭 랭크 DTO 입니다.
+                    - 응답 형식 : {"count":"1","clickRank":{"bbb":"2", "ccc":"4", "ddd":"3"}} (* 주의. 리스트는 정렬되지 않은 상태로 반환되므로 내림차순 정렬하여 클릭 랭크에 렌더링)
+                    """
+    )
+    public ResponseEntity<ClickResponse> getClick(@AuthMember Long memberId) {
+        Click click = clickService.getClickByMemberId(memberId);
+
+        Map<String, String> clickRank = new HashMap<>();
+        List<Click> topTenClicks = clickService.getTopTenClicks();
+        topTenClicks.stream().forEach(c -> clickRank.put(c.getMember().getNickname(), format(c.getCount())));
+
+        ClickResponse clickResponse = ClickResponse.builder()
+                .count(format(click.getCount()))
+                .clickRank(clickRank)
+                .build();
+
+        return ResponseEntity.ok(clickResponse);
+    }
 
     @PostMapping
     @Operation(
@@ -52,7 +81,8 @@ public class ClickController {
                     description = """
                             - 웹소켓 구독 1 URL( /sub/click/{본인 닉네임} )로 도착하는 STOMP 응답 형식 : {"nickname":"aaa","count":"1"}
                             - 웹소켓 구독 2 URL( /sub/click-rank )로 도착하는 STOMP 응답 형식 : {"clickRank":{"aaa":"1","bbb":"2"}}
-                            """),
+                            """
+            ),
             @ApiResponse(
                     responseCode = "400",
                     description = """
@@ -81,8 +111,8 @@ public class ClickController {
                 .build();
         kafkaClickRequestKafkaTemplate.send("click", null, kafkaClickRequest);
 
-        List<Click> topTenClicks = clickService.getTopTenClicks();
         Map<String, String> clickRank = new HashMap<>();
+        List<Click> topTenClicks = clickService.getTopTenClicks();
         topTenClicks.stream().forEach(c -> clickRank.put(c.getMember().getNickname(), format(c.getCount())));
         KafkaClickRankRequest kafkaClickRankRequest = KafkaClickRankRequest.builder()
                 .clickRank(clickRank)
