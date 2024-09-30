@@ -92,8 +92,8 @@ public class AuthController {
                     content = {@Content(schema = @Schema(implementation = ExceptionResponse.class))})
     })
     public ResponseEntity<TokenResponse> reissueTokens(
-            @RequestBody ReissueRequest reissueRequest,
-            @AuthMember Long memberId
+            @AuthMember Long memberId,
+            @RequestBody ReissueRequest reissueRequest
     ) {
         String refreshToken = reissueRequest.refreshToken();
         return ResponseEntity.ok(authService.reissueTokens(memberId, refreshToken));

@@ -43,15 +43,15 @@ public class AuthConfig implements WebMvcConfigurer {
     private HandlerInterceptor loginInterceptor() {
         return new PathMatchInterceptor(loginInterceptor)
                 .excludePathPattern("/**", OPTIONS)
-                .excludePathPattern("/api/v1/auth/**", POST)
-                .includePathPattern("/api/v1/**", GET, POST, PUT, DELETE)
+                .includePathPattern("/api/v1/**", GET, POST)
+                .excludePathPattern("/api/v1/auth/reissue", POST)
                 ;
     }
 
     private HandlerInterceptor tokenReissueInterceptor() {
         return new PathMatchInterceptor(tokenReissueInterceptor)
                 .excludePathPattern("/**", OPTIONS)
-                .includePathPattern("/api/v1/reissue", POST)
+                .includePathPattern("/api/v1/auth/reissue", POST)
                 ;
     }
 
