@@ -35,7 +35,7 @@ public class KafkaConsumerConfig {
 
         JsonDeserializer<KafkaChatMessageRequest> deserializer = new JsonDeserializer<>(KafkaChatMessageRequest.class);
         deserializer.setRemoveTypeHeaders(false);
-        deserializer.addTrustedPackages("cjkimhello97.toy.crashMyServer.kafka.dto.*");
+        deserializer.addTrustedPackages("*");
         deserializer.setUseTypeMapperForKey(true);
 
         consumerProps.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaConstants.KAFKA_BROKER);
