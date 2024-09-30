@@ -126,7 +126,7 @@ public class GroupChatController {
             @ApiResponse(
                     responseCode = "200",
                     description = """
-                            - 설명 : 채팅 내역 조회 요청이 정상적으로 이뤄져 반환될 DTO 입니다. DTO 의 value 는 리스트 형태입니다. 
+                            - 설명 : 메인 페이지 입장시 반환될 채팅 내역 DTO 입니다. DTO 의 value 는 리스트 형태입니다. 
                             - 응답 형식 : { 
                                             "groupChatMessageResponses": [ 
                                                 { 
