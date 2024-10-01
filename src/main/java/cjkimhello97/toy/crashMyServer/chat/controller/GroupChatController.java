@@ -180,6 +180,7 @@ public class GroupChatController {
         return ResponseEntity.ok(groupChatService.getGroupChatMessages(chatRoomId, senderId));
     }
 
+    @PostMapping("STOMP 요청이지만 Swagger 작성을 위해 매핑해둡니다.")
     @MessageMapping("/group-chat-messages")
     @Operation(
             summary = "[ STOMP 요청/응답 ] 그룹 채팅방 채팅 메시지 전송 API",
