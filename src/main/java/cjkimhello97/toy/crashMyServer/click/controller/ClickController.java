@@ -21,11 +21,13 @@ import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@CrossOrigin
 @Tag(name = "클릭 조회(본인 클릭 + 클릭 랭크) / 클릭(본인 클릭 횟수+ 클릭 랭크)")
 @RestController
 @RequestMapping("/api/v1/click")
