@@ -1,10 +1,8 @@
 package cjkimhello97.toy.crashMyServer.auth.config;
 
-import static cjkimhello97.toy.crashMyServer.auth.interceptor.HttpMethod.DELETE;
 import static cjkimhello97.toy.crashMyServer.auth.interceptor.HttpMethod.GET;
 import static cjkimhello97.toy.crashMyServer.auth.interceptor.HttpMethod.OPTIONS;
 import static cjkimhello97.toy.crashMyServer.auth.interceptor.HttpMethod.POST;
-import static cjkimhello97.toy.crashMyServer.auth.interceptor.HttpMethod.PUT;
 
 import cjkimhello97.toy.crashMyServer.auth.interceptor.LoginInterceptor;
 import cjkimhello97.toy.crashMyServer.auth.interceptor.PathMatchInterceptor;
