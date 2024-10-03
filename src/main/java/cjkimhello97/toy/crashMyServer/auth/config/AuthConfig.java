@@ -42,7 +42,7 @@ public class AuthConfig implements WebMvcConfigurer {
         return new PathMatchInterceptor(loginInterceptor)
                 .excludePathPattern("/**", OPTIONS)
                 .includePathPattern("/api/v1/**", GET, POST)
-                .excludePathPattern("/api/v1/auth/reissue", POST)
+                .excludePathPattern("/api/v1/auth/**", POST)
                 ;
     }
 
