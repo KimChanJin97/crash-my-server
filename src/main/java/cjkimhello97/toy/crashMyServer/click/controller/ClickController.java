@@ -3,9 +3,9 @@ package cjkimhello97.toy.crashMyServer.click.controller;
 import static cjkimhello97.toy.crashMyServer.click.utils.CountFormatter.format;
 
 import cjkimhello97.toy.crashMyServer.auth.support.AuthMember;
+import cjkimhello97.toy.crashMyServer.click.controller.dto.ClickResponse;
 import cjkimhello97.toy.crashMyServer.click.domain.Click;
 import cjkimhello97.toy.crashMyServer.click.service.ClickService;
-import cjkimhello97.toy.crashMyServer.click.controller.dto.ClickResponse;
 import cjkimhello97.toy.crashMyServer.common.exception.dto.ExceptionResponse;
 import cjkimhello97.toy.crashMyServer.kafka.dto.KafkaClickRankRequest;
 import cjkimhello97.toy.crashMyServer.kafka.dto.KafkaClickRequest;
@@ -21,13 +21,11 @@ import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@CrossOrigin
 @Tag(name = "클릭 조회(본인 클릭 + 클릭 랭크) / 클릭(본인 클릭 횟수+ 클릭 랭크)")
 @RestController
 @RequestMapping("/api/v1/click")

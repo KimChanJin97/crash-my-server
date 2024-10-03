@@ -27,7 +27,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -36,7 +35,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name = "그룹 채팅방 입장 / 채팅 메시지 전송 / 채팅방 퇴장 / 채팅 메시지 조회")
 @RestController
-@CrossOrigin
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/group-chat")
 public class GroupChatController {
