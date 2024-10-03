@@ -15,11 +15,13 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@CrossOrigin
 @Tag(name = "회원가입 / 로그인 / 토큰 재발급")
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -95,7 +97,6 @@ public class AuthController {
             @AuthMember Long memberId,
             @RequestBody ReissueRequest reissueRequest
     ) {
-        String refreshToken = reissueRequest.refreshToken();
-        return ResponseEntity.ok(authService.reissueTokens(memberId, refreshToken));
+        return ResponseEntity.ok(authService.reissueTokens(memberId, reissueRequest));
     }
 }

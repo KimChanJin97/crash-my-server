@@ -15,6 +15,7 @@ public enum AuthExceptionType implements ExceptionType {
 
     // 회원가입
     WRONG_PASSWORD(Status.BAD_REQUEST, 4007, "WRONG PASSWORD"),
+    NICKNAME_EXCEED_LENGTH_TEN(Status.BAD_REQUEST, 4008, "NICKNAME_EXCEED_LENGTH_TEN")
     ;
 
     private final Status status;
