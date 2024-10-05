@@ -19,6 +19,7 @@ import jakarta.persistence.ManyToOne;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,7 +27,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 public class ChatRoom {
@@ -52,7 +53,8 @@ public class ChatRoom {
     private LocalDateTime createdAt;
 
     @Builder
-    public ChatRoom(Member host, String chatRoomName) {
+    public ChatRoom(Long chatRoomId, Member host, String chatRoomName) {
+        this.chatRoomId = chatRoomId;
         this.host = host;
         this.chatRoomName = chatRoomName;
     }
