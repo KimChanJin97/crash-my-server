@@ -12,6 +12,7 @@ import jakarta.persistence.MapsId;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -38,4 +39,12 @@ public class MemberChatRoom { // 다대다 중간 테이블
 
     @Column(name = "joined_at")
     private LocalDateTime joinedAt;
+
+    @Builder
+    public MemberChatRoom(MemberChatRoomId id, ChatRoom chatRoom, Member member, LocalDateTime joinedAt) {
+        this.id = id;
+        this.chatRoom = chatRoom;
+        this.member = member;
+        this.joinedAt = joinedAt;
+    }
 }

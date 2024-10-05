@@ -2,6 +2,8 @@ package cjkimhello97.toy.crashMyServer.chat.service;
 
 import static cjkimhello97.toy.crashMyServer.chat.exception.ChatExceptionType.CHAT_ROOM_NOT_FOUND;
 import static cjkimhello97.toy.crashMyServer.chat.exception.ChatExceptionType.MEMBER_CHAT_ROOM_TABLE_NOT_EXIST;
+import static cjkimhello97.toy.crashMyServer.chat.utils.GroupChatMessageUtils.enterGroupChatRoomMessage;
+import static cjkimhello97.toy.crashMyServer.chat.utils.GroupChatMessageUtils.leaveGroupChatRoomMessage;
 
 import cjkimhello97.toy.crashMyServer.chat.controller.dto.ChatMessageResponse;
 import cjkimhello97.toy.crashMyServer.chat.controller.dto.GroupChatMessageResponse;
@@ -15,6 +17,7 @@ import cjkimhello97.toy.crashMyServer.chat.repository.ChatMessageRepository;
 import cjkimhello97.toy.crashMyServer.chat.repository.ChatRoomRepository;
 import cjkimhello97.toy.crashMyServer.chat.repository.MemberChatRoomRepository;
 import cjkimhello97.toy.crashMyServer.chat.service.dto.GroupChatMessageRequest;
+import cjkimhello97.toy.crashMyServer.kafka.dto.KafkaChatMessageRequest;
 import cjkimhello97.toy.crashMyServer.member.domain.Member;
 import cjkimhello97.toy.crashMyServer.member.service.MemberService;
 import java.time.LocalDateTime;
@@ -24,6 +27,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,6 +40,7 @@ public class GroupChatService {
     private final MemberChatRoomRepository memberChatRoomRepository;
     private final MemberService memberService;
     private final ModelMapper modelMapper;
+    private final KafkaTemplate<String, KafkaChatMessageRequest> kafkaChatMessageRequestTemplate;
 
     @Transactional
     public Long createGroupChatRoom(Long senderId, String chatRoomName) {
@@ -45,12 +50,22 @@ public class GroupChatService {
                 .chatRoomName(chatRoomName)
                 .build();
         ChatRoom savedChatRoom = chatRoomRepository.save(chatRoom);
+
         enterGroupChatRoom(savedChatRoom.getChatRoomId(), senderId);
         return savedChatRoom.getChatRoomId();
     }
 
     @Transactional
     public void enterGroupChatRoom(Long chatRoomId, Long senderId) {
+        String senderNickname = memberService.getMemberNicknameByMemberId(senderId);
+        KafkaChatMessageRequest kafkaRequest = KafkaChatMessageRequest.builder()
+                .chatRoomId(chatRoomId)
+                .senderId(senderId)
+                .senderNickname(senderNickname)
+                .content(enterGroupChatRoomMessage(senderNickname))
+                .build();
+        kafkaChatMessageRequestTemplate.send("enter", kafkaRequest);
+
         ChatRoom chatRoom = getChatRoomByChatRoomId(chatRoomId);
         Member sender = memberService.getMemberByMemberId(senderId);
         sender.addChatRoom(chatRoom);
@@ -62,6 +77,13 @@ public class GroupChatService {
 
     @Transactional
     public void saveGroupChatMessage(GroupChatMessageRequest groupChatMessageRequest) {
+        groupChatMessageRequest.setCreatedAtNow();
+        Member member = memberService.getMemberByNickname(groupChatMessageRequest.getSenderNickname());
+        KafkaChatMessageRequest kafkaRequest = modelMapper.map(groupChatMessageRequest, KafkaChatMessageRequest.class);
+        kafkaRequest.setSenderId(member.getMemberId());
+        kafkaRequest.setChatRoomId(groupChatMessageRequest.getChatRoomId());
+        kafkaChatMessageRequestTemplate.send("group-chat", kafkaRequest);
+
         ChatMessage chatMessage = ChatMessage.builder()
                 .chatRoomId(groupChatMessageRequest.getChatRoomId())
                 .senderNickname(groupChatMessageRequest.getSenderNickname())
@@ -100,6 +122,16 @@ public class GroupChatService {
 
     @Transactional
     public void leaveGroupChatRoom(Long chatRoomId, Long senderId) {
+        String senderNickname = memberService.getMemberNicknameByMemberId(senderId);
+
+        KafkaChatMessageRequest kafkaRequest = KafkaChatMessageRequest.builder()
+                .chatRoomId(chatRoomId)
+                .senderId(senderId)
+                .senderNickname(senderNickname)
+                .content(leaveGroupChatRoomMessage(senderNickname))
+                .build();
+        kafkaChatMessageRequestTemplate.send("leave", kafkaRequest);
+
         ChatRoom chatRoom = getChatRoomByChatRoomId(chatRoomId);
         Member sender = memberService.getMemberByMemberId(senderId);
         sender.removeChatRoom(chatRoom);

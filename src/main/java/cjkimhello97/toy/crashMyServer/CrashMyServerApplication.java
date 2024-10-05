@@ -11,7 +11,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 		servers = {
 				@Server(url = "https://crash-my-server.site", description = "Default Server URL"),
 				@Server(url = "http://localhost:8080", description = "Localhost Spring URL"),
-				@Server(url = "https://localhost:3000", description = "Localhost React URL"),
+				@Server(url = "http://localhost:3000", description = "Localhost React URL"),
 				@Server(url = "https://crush-my-server.vercel.app", description = "Temporarily Deployed Server URL")
 		}
 )
