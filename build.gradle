@@ -62,14 +62,17 @@ dependencies {
 	// Model Mapper
 	implementation 'org.modelmapper:modelmapper:3.1.1'
 
-	// AWS Secret Manager
-	implementation 'io.awspring.cloud:spring-cloud-starter-aws-secrets-manager-config:2.4.4'
-
 	// Validation
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 
-	//Swagger
+	// Swagger
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2'
+
+	// Mockito
+	testImplementation "org.mockito:mockito-core:3.+"
+
+	// Test Containers
+	testImplementation "org.testcontainers:testcontainers:1.18.3"
 }
 
 tasks.named('test') {
