@@ -73,6 +73,10 @@ dependencies {
 
 	// Test Containers
 	testImplementation "org.testcontainers:testcontainers:1.18.3"
+
+	// Spring Actuator
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	implementation 'io.micrometer:micrometer-registry-prometheus'
 }
 
 tasks.named('test') {
