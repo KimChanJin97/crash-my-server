@@ -35,7 +35,6 @@ public class ClickService {
                 .nickname(click.getMember().getNickname())
                 .build();
         kafkaClickRequestKafkaTemplate.send("click", kafkaClickRequest);
-        log.info("hello click = {}", kafkaClickRequest);
 
         Map<String, String> clickRank = new HashMap<>();
         List<Click> topTenClicks = getTopTenClicks();
@@ -44,7 +43,6 @@ public class ClickService {
                 .clickRank(clickRank)
                 .build();
         kafkaClickRankRequestKafkaTemplate.send("click-rank", kafkaClickRankRequest);
-        log.info("hello clickRank = {}", kafkaClickRankRequest);
 
         return click.addCount();
     }
