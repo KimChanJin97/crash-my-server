@@ -41,6 +41,11 @@ public class IntegrationTest {
                         "kafka",
                         9092,
                         Wait.forListeningPort().withStartupTimeout(Duration.ofSeconds(1000))
+                )
+                .withExposedService(
+                        "app",
+                        8080,
+                        Wait.forListeningPort().withStartupTimeout(Duration.ofSeconds(1000))
                 );
 
         containers.start();
