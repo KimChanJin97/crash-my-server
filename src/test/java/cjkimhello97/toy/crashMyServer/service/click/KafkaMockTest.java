@@ -58,6 +58,8 @@ public class KafkaMockTest extends IntegrationTest {
     private final String MEMBER_B_NICKNAME = "bbb";
     private final Long MEMBER_A_ID = 1L;
     private final Long MEMBER_B_ID = 2L;
+    private final Double MEMBER_A_CLICK_COUNT = 0D;
+    private final Double MEMBER_B_CLICK_COUNT = 100D;
 
     @BeforeEach
     void beforeEach() {
@@ -93,11 +95,11 @@ public class KafkaMockTest extends IntegrationTest {
         // 클릭
         Click clickOfA = Click.builder()
                 .member(memberA)
-                .count(0D)
+                .count(MEMBER_A_CLICK_COUNT)
                 .build();
         Click clickOfB = Click.builder()
                 .member(memberB)
-                .count(100D)
+                .count(MEMBER_B_CLICK_COUNT)
                 .build();
 
         Mockito.when(clickRepository.findByMemberMemberId(memberA.getMemberId()))
@@ -113,35 +115,35 @@ public class KafkaMockTest extends IntegrationTest {
     @DisplayName("[ CLICK ] MOCK TEST 1")
     void 클릭하면_카프카_클릭_메시지가_발행되어야_한다() {
         // given: 카프카 클릭 메시지 요청 DTO 생성
-        KafkaClickRequest kafkaClickRequest = ClickServiceFixtureObject.kafkaClickRequest();
+        KafkaClickRequest kafkaClickRequest = ClickServiceFixtureObject.kafkaClickRequest(); // aaa, 0
 
         // when: 클릭
         clickService.click(memberA.getMemberId());
 
         // then: 클릭하면 카프카 클릭 메시지가 발행되어야 한다
-        ArgumentCaptor<String> topicCaptor = ArgumentCaptor.forClass(String.class);
-        ArgumentCaptor<KafkaClickRequest> requestCaptor = ArgumentCaptor.forClass(KafkaClickRequest.class);
-        Mockito.verify(kafkaClickRequestKafkaTemplate).send(topicCaptor.capture(), requestCaptor.capture());
+        ArgumentCaptor<String> clickTopicCaptor = ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<KafkaClickRequest> clickRequestCaptor = ArgumentCaptor.forClass(KafkaClickRequest.class);
+        Mockito.verify(kafkaClickRequestKafkaTemplate).send(clickTopicCaptor.capture(), clickRequestCaptor.capture());
 
-        Assertions.assertEquals("click", topicCaptor.getValue());
-        Assertions.assertEquals(kafkaClickRequest, requestCaptor.getValue());
+        Assertions.assertEquals("click", clickTopicCaptor.getValue());
+        Assertions.assertEquals(kafkaClickRequest, clickRequestCaptor.getValue());
     }
 
     @Test
     @DisplayName("[ CLICK ] MOCK TEST 2")
     void 클릭하면_카프카_클릭_랭킹_메시지가_발행되어야_한다() {
         // given: 카프카 클릭 랭킹 메시지 요청 DTO 생성
-        KafkaClickRankRequest kafkaClickRankRequest = ClickServiceFixtureObject.kafkaClickRankRequest();
+        KafkaClickRankRequest kafkaClickRankRequest = ClickServiceFixtureObject.kafkaClickRankRequest(); // aaa:0, bbb:100
 
         // when: 클릭
         clickService.click(memberA.getMemberId());
 
         // then: 클릭하면 카프카 클릭 랭킹 메시지가 발행되어야 한다
-        ArgumentCaptor<String> topicCaptor = ArgumentCaptor.forClass(String.class);
-        ArgumentCaptor<KafkaClickRankRequest> requestCaptor = ArgumentCaptor.forClass(KafkaClickRankRequest.class);
-        Mockito.verify(kafkaClickRankRequestKafkaTemplate).send(topicCaptor.capture(), requestCaptor.capture());
+        ArgumentCaptor<String> clickRankTopicCaptor = ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<KafkaClickRankRequest> clickRankRequestCaptor = ArgumentCaptor.forClass(KafkaClickRankRequest.class);
+        Mockito.verify(kafkaClickRankRequestKafkaTemplate).send(clickRankTopicCaptor.capture(), clickRankRequestCaptor.capture());
 
-        Assertions.assertEquals("click-rank", topicCaptor.getValue());
-        Assertions.assertEquals(kafkaClickRankRequest, requestCaptor.getValue());
+        Assertions.assertEquals("click-rank", clickRankTopicCaptor.getValue());
+        Assertions.assertEquals(kafkaClickRankRequest, clickRankRequestCaptor.getValue());
     }
 }
