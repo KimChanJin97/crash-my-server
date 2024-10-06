@@ -31,7 +31,7 @@ public class KafkaTopicConfig {
         return TopicBuilder
                 .name("group-chat")
                 .partitions(100)
-                .replicas(2)
+                .replicas(1)
                 .build();
     }
 
