@@ -54,7 +54,7 @@ public class AuthService {
 
         Click click = Click.builder()
                 .member(member)
-                .count(Double.valueOf(0))
+                .count(Double.valueOf(1))
                 .build();
         clickRepository.save(click);
         return signIn(member, password);
