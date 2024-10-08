@@ -100,8 +100,7 @@ public class GroupChatService {
         sender.getChatRooms().forEach(chatRoom -> {
             GroupChatRoomResponse groupChatRoomResponse = GroupChatRoomResponse.from(chatRoom);
             ChatMessageResponse chatMessageResponse = modelMapper
-                    .map(chatMessageRepository.findFirstByChatRoomIdOrderByCreatedAtDesc(
-                                    chatRoom.getChatRoomId()),
+                    .map(chatMessageRepository.findFirstByChatRoomIdOrderByCreatedAtDesc(chatRoom.getChatRoomId()),
                             ChatMessageResponse.class
                     );
             groupChatRoomResponse.setChatMessageResponse(chatMessageResponse);
