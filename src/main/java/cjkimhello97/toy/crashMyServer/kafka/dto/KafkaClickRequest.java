@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class KafkaClickRequest implements Serializable {
 
+    private String uuid;
     private String nickname;
     private String count;
 }
