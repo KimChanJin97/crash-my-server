@@ -43,6 +43,7 @@ public class KafkaTopicListener {
         acknowledgment.acknowledge();
     }
 
+    @Transactional
     @KafkaListener(id = "clickRankListener", topics = "click-rank", containerFactory = "kafkaClickRankRequestConcurrentKafkaListenerContainerFactory")
     public void listenClickRankTopic(ConsumerRecord<String, KafkaClickRankRequest> record, Acknowledgment acknowledgment) {
         log.info("listen click rank = {}", record);
@@ -61,6 +62,7 @@ public class KafkaTopicListener {
         acknowledgment.acknowledge();
     }
 
+    @Transactional
     @KafkaListener(id = "enterListener", topics = "enter", containerFactory = "kafkaChatMessageRequestConcurrentKafkaListenerContainerFactory")
     public void listenEnterTopic(ConsumerRecord<String, KafkaChatMessageRequest> record, Acknowledgment acknowledgment) {
         log.info("listen enter = {}", record);
@@ -80,6 +82,7 @@ public class KafkaTopicListener {
         acknowledgment.acknowledge();
     }
 
+    @Transactional
     @KafkaListener(id = "groupChatListener", topics = "group-chat", containerFactory = "kafkaChatMessageRequestConcurrentKafkaListenerContainerFactory")
     public void listenGroupChatTopic(ConsumerRecord<String, KafkaChatMessageRequest> record, Acknowledgment acknowledgment) {
         log.info("listen group chat = {}", record);
@@ -99,6 +102,7 @@ public class KafkaTopicListener {
         acknowledgment.acknowledge();
     }
 
+    @Transactional
     @KafkaListener(id = "leaveListener", topics = "leave", containerFactory = "kafkaChatMessageRequestConcurrentKafkaListenerContainerFactory")
     public void listenLeaveTopic(ConsumerRecord<String, KafkaChatMessageRequest> record, Acknowledgment acknowledgment) {
         log.info("listen leave = {}", record);
