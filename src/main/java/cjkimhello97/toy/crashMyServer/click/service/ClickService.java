@@ -11,6 +11,7 @@ import cjkimhello97.toy.crashMyServer.kafka.dto.KafkaClickRequest;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -31,6 +32,7 @@ public class ClickService {
     public Click click(Long memberId) {
         Click click = getClickByMemberId(memberId);
         KafkaClickRequest kafkaClickRequest = KafkaClickRequest.builder()
+                .uuid(String.valueOf(UUID.randomUUID()))
                 .count(format(click.getCount()))
                 .nickname(click.getMember().getNickname())
                 .build();
@@ -40,6 +42,7 @@ public class ClickService {
         List<Click> topTenClicks = getTopTenClicks();
         topTenClicks.stream().forEach(c -> clickRank.put(c.getMember().getNickname(), format(c.getCount())));
         KafkaClickRankRequest kafkaClickRankRequest = KafkaClickRankRequest.builder()
+                .uuid(String.valueOf(UUID.randomUUID()))
                 .clickRank(clickRank)
                 .build();
         kafkaClickRankRequestKafkaTemplate.send("click-rank", kafkaClickRankRequest);

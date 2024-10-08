@@ -13,5 +13,6 @@ import lombok.NoArgsConstructor;
 @Builder
 public class KafkaClickRankRequest implements Serializable {
 
+    private String uuid;
     private Map<String, String> clickRank;
 }
