@@ -34,12 +34,14 @@ public class AuthService {
 
     @Transactional
     public SigninResponse signUp(SignupRequest signUpRequest) {
+        log.info("[ AuthService ] signUp START ===========================================");
         String nickname = signUpRequest.nickname();
         String password = signUpRequest.password();
 
         validateNickname(nickname);
 
         // 닉네임 존재 O = 로그인 로직
+        log.info("[ AuthService ] signup - memberRepository.findByNickname(nickname)");
         Optional<Member> optionalMember = memberRepository.findByNickname(nickname);
         if (optionalMember.isPresent()) {
             return signIn(optionalMember.get(), password);
@@ -50,18 +52,22 @@ public class AuthService {
                 .nickname(nickname)
                 .password(passwordEncoder.encode(password))
                 .build();
+        log.info("[ AuthService ] signup - memberRepository.save(member)");
         memberRepository.save(member);
 
         Click click = Click.builder()
                 .member(member)
                 .count(Double.valueOf(1))
                 .build();
+        log.info("[ AuthService ] signup - clickRepository.save(click)");
         clickRepository.save(click);
         return signIn(member, password);
     }
 
     public SigninResponse signIn(Member savedMember, String password) {
+        log.info("[ AuthService ] signIn START ===========================================");
         // 닉네임 존재 O && 비밀번호 존재 X = 예외
+        log.info("[ AuthService ] signIn - savedMember.getPassword()");
         if (!passwordEncoder.matches(password, savedMember.getPassword())) {
             throw new AuthException(WRONG_PASSWORD);
         }
