@@ -28,8 +28,7 @@ public class KafkaTopicListener {
     @KafkaListener(
             id = "clickListener",
             topics = "click",
-            containerFactory = "kafkaClickRequestConcurrentKafkaListenerContainerFactory",
-            groupId = "click"
+            containerFactory = "kafkaClickRequestConcurrentKafkaListenerContainerFactory"
     )
     public void listenClickTopic(ConsumerRecord<String, KafkaClickRequest> record, Acknowledgment acknowledgment) {
         log.info("listen click = {}", record);
@@ -65,8 +64,7 @@ public class KafkaTopicListener {
     @KafkaListener(
             id = "clickRankListener",
             topics = "click-rank",
-            containerFactory = "kafkaClickRankRequestConcurrentKafkaListenerContainerFactory",
-            groupId = "click-rank"
+            containerFactory = "kafkaClickRankRequestConcurrentKafkaListenerContainerFactory"
     )
     public void listenClickRankTopic(ConsumerRecord<String, KafkaClickRankRequest> record, Acknowledgment acknowledgment) {
         log.info("listen click rank = {}", record);
@@ -100,8 +98,7 @@ public class KafkaTopicListener {
     @KafkaListener(
             id = "enterListener",
             topics = "enter",
-            containerFactory = "kafkaChatMessageRequestConcurrentKafkaListenerContainerFactory",
-            groupId = "group-chat"
+            containerFactory = "kafkaChatMessageRequestConcurrentKafkaListenerContainerFactory"
     )
     public void listenEnterTopic(ConsumerRecord<String, KafkaChatMessageRequest> record, Acknowledgment acknowledgment) {
         log.info("listen enter = {}", record);
@@ -136,8 +133,7 @@ public class KafkaTopicListener {
     @KafkaListener(
             id = "groupChatListener",
             topics = "group-chat",
-            containerFactory = "kafkaChatMessageRequestConcurrentKafkaListenerContainerFactory",
-            groupId = "group-chat"
+            containerFactory = "kafkaChatMessageRequestConcurrentKafkaListenerContainerFactory"
     )
     public void listenGroupChatTopic(ConsumerRecord<String, KafkaChatMessageRequest> record, Acknowledgment acknowledgment) {
         log.info("listen group chat = {}", record);
@@ -172,8 +168,7 @@ public class KafkaTopicListener {
     @KafkaListener(
             id = "leaveListener",
             topics = "leave",
-            containerFactory = "kafkaChatMessageRequestConcurrentKafkaListenerContainerFactory",
-            groupId = "group-chat"
+            containerFactory = "kafkaChatMessageRequestConcurrentKafkaListenerContainerFactory"
     )
     public void listenLeaveTopic(ConsumerRecord<String, KafkaChatMessageRequest> record, Acknowledgment acknowledgment) {
         log.info("listen leave = {}", record);
