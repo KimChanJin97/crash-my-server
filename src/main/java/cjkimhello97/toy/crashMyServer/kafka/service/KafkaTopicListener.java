@@ -101,7 +101,7 @@ public class KafkaTopicListener {
             id = "enterListener",
             topics = "enter",
             containerFactory = "kafkaChatMessageRequestConcurrentKafkaListenerContainerFactory",
-            groupId = "enter"
+            groupId = "group-chat"
     )
     public void listenEnterTopic(ConsumerRecord<String, KafkaChatMessageRequest> record, Acknowledgment acknowledgment) {
         log.info("listen enter = {}", record);
@@ -173,7 +173,7 @@ public class KafkaTopicListener {
             id = "leaveListener",
             topics = "leave",
             containerFactory = "kafkaChatMessageRequestConcurrentKafkaListenerContainerFactory",
-            groupId = "leave"
+            groupId = "group-chat"
     )
     public void listenLeaveTopic(ConsumerRecord<String, KafkaChatMessageRequest> record, Acknowledgment acknowledgment) {
         log.info("listen leave = {}", record);
