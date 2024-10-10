@@ -30,6 +30,7 @@ public class ClickService {
 
     @Transactional
     public Click click(Long memberId) {
+        log.info("[ ClickService ] click START ============================================");
         Click click = getClickByMemberId(memberId);
         KafkaClickRequest kafkaClickRequest = KafkaClickRequest.builder()
                 .uuid(String.valueOf(UUID.randomUUID()))
@@ -47,14 +48,17 @@ public class ClickService {
                 .build();
         kafkaClickRankRequestKafkaTemplate.send("click-rank", kafkaClickRankRequest);
 
+        log.info("[ ClickService ] click - addCount()");
         return click.addCount();
     }
 
     public List<Click> getTopTenClicks() {
+        log.info("[ ClickService ] click - getClickByMemberId(memberId)");
         return clickRepository.findTop10ClicksByCountDesc(PageRequest.of(0, 10));
     }
 
     public Click getClickByMemberId(Long memberId) {
+        log.info("[ ClickService ] click - getTopTenClicks");
         return clickRepository.findByMemberMemberId(memberId)
                 .orElseThrow(() -> new ClickException(ClickExceptionType.CLICK_NOT_FOUND));
     }
