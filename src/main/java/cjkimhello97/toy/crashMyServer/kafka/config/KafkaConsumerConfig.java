@@ -49,6 +49,7 @@ public class KafkaConsumerConfig {
         consumerProps.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, deserializer);
         consumerProps.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest");
         consumerProps.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false"); // 오토 커밋 false
+        consumerProps.put(ConsumerConfig.GROUP_ID_CONFIG, "click");
         return new DefaultKafkaConsumerFactory<>(consumerProps, new StringDeserializer(), deserializer);
     }
 
@@ -74,6 +75,7 @@ public class KafkaConsumerConfig {
         consumerProps.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, deserializer);
         consumerProps.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest");
         consumerProps.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false"); // 오토 커밋 false
+        consumerProps.put(ConsumerConfig.GROUP_ID_CONFIG, "click-rank");
         return new DefaultKafkaConsumerFactory<>(consumerProps, new StringDeserializer(), deserializer);
     }
 
@@ -99,6 +101,7 @@ public class KafkaConsumerConfig {
         consumerProps.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, deserializer);
         consumerProps.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest");
         consumerProps.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false"); // 오토 커밋 false
+        consumerProps.put(ConsumerConfig.GROUP_ID_CONFIG, "group-chat");
         return new DefaultKafkaConsumerFactory<>(consumerProps, new StringDeserializer(), deserializer);
     }
 }

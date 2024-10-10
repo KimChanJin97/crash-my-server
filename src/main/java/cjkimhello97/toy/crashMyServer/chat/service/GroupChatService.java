@@ -16,7 +16,6 @@ import cjkimhello97.toy.crashMyServer.chat.exception.ChatException;
 import cjkimhello97.toy.crashMyServer.chat.repository.ChatMessageRepository;
 import cjkimhello97.toy.crashMyServer.chat.repository.ChatRoomRepository;
 import cjkimhello97.toy.crashMyServer.chat.repository.MemberChatRoomRepository;
-import cjkimhello97.toy.crashMyServer.kafka.repository.ProcessedKafkaRequestRepository;
 import cjkimhello97.toy.crashMyServer.chat.service.dto.GroupChatMessageRequest;
 import cjkimhello97.toy.crashMyServer.kafka.dto.KafkaChatMessageRequest;
 import cjkimhello97.toy.crashMyServer.member.domain.Member;
@@ -31,7 +30,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -124,13 +122,15 @@ public class GroupChatService {
 
         log.info("[ GroupChatService ] getGroupChatRooms - sender.getChatRooms().forEach");
         sender.getChatRooms().forEach(chatRoom -> {
-            log.info("[ GroupChatService ] getGroupChatRooms - .map(chatMessageRepository.findFirstByChatRoomIdOrderByCreatedAtDesc(chatRoom.getChatRoomId())");
+            log.info(
+                    "[ GroupChatService ] getGroupChatRooms - .map(chatMessageRepository.findFirstByChatRoomIdOrderByCreatedAtDesc(chatRoom.getChatRoomId())");
             GroupChatRoomResponse groupChatRoomResponse = GroupChatRoomResponse.from(chatRoom);
             ChatMessageResponse chatMessageResponse = modelMapper
                     .map(chatMessageRepository.findFirstByChatRoomIdOrderByCreatedAtDesc(chatRoom.getChatRoomId()),
                             ChatMessageResponse.class
                     );
-            log.info("[ GroupChatService ] getGroupChatRooms - groupChatRoomResponse.setChatMessageResponse(chatMessageResponse)");
+            log.info(
+                    "[ GroupChatService ] getGroupChatRooms - groupChatRoomResponse.setChatMessageResponse(chatMessageResponse)");
             groupChatRoomResponse.setChatMessageResponse(chatMessageResponse);
             log.info("[ GroupChatService ] getGroupChatRooms - groupChatRoomResponses.add(groupChatRoomResponse)");
             groupChatRoomResponses.add(groupChatRoomResponse);
@@ -142,7 +142,8 @@ public class GroupChatService {
         log.info("[ GroupChatService ] getGroupChatMessages START ============================================");
 
         MemberChatRoom memberChatRoom = getMemberChatRoomByMemberIdAndChatRoomId(senderId, chatRoomId);
-        log.info("[ GroupChatService ] getGroupChatMessages - chatMessageRepository.findAllByChatRoomIdAndCreatedAtGreaterThanEqual(chatRoomId, memberChatRoom.getJoinedAt())");
+        log.info(
+                "[ GroupChatService ] getGroupChatMessages - chatMessageRepository.findAllByChatRoomIdAndCreatedAtGreaterThanEqual(chatRoomId, memberChatRoom.getJoinedAt())");
         List<GroupChatMessageResponse> groupChatMessageResponses = chatMessageRepository
                 .findAllByChatRoomIdAndCreatedAtGreaterThanEqual(chatRoomId, memberChatRoom.getJoinedAt())
                 .stream()
