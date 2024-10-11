@@ -6,6 +6,7 @@ import static cjkimhello97.toy.crashMyServer.auth.interceptor.HttpMethod.POST;
 
 import cjkimhello97.toy.crashMyServer.auth.interceptor.LoginInterceptor;
 import cjkimhello97.toy.crashMyServer.auth.interceptor.PathMatchInterceptor;
+import cjkimhello97.toy.crashMyServer.auth.interceptor.TokenBlackListInterceptor;
 import cjkimhello97.toy.crashMyServer.auth.interceptor.TokenReissueInterceptor;
 import cjkimhello97.toy.crashMyServer.auth.support.AuthArgumentResolver;
 import java.util.List;
@@ -26,6 +27,7 @@ public class AuthConfig implements WebMvcConfigurer {
     private final AuthArgumentResolver authArgumentResolver;
     private final LoginInterceptor loginInterceptor;
     private final TokenReissueInterceptor tokenReissueInterceptor;
+    private final TokenBlackListInterceptor tokenBlackListInterceptor;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -36,13 +38,14 @@ public class AuthConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(loginInterceptor());
         registry.addInterceptor(tokenReissueInterceptor());
+        registry.addInterceptor(tokenBlackListInterceptor());
     }
 
     private HandlerInterceptor loginInterceptor() {
         return new PathMatchInterceptor(loginInterceptor)
                 .excludePathPattern("/**", OPTIONS)
                 .includePathPattern("/api/v1/**", GET, POST)
-                .excludePathPattern("/api/v1/auth/**", POST)
+                .excludePathPattern("/api/v1/auth/sign-up", POST)
                 ;
     }
 
@@ -50,6 +53,14 @@ public class AuthConfig implements WebMvcConfigurer {
         return new PathMatchInterceptor(tokenReissueInterceptor)
                 .excludePathPattern("/**", OPTIONS)
                 .includePathPattern("/api/v1/auth/reissue", POST)
+                ;
+    }
+
+    private HandlerInterceptor tokenBlackListInterceptor() {
+        return new PathMatchInterceptor(tokenBlackListInterceptor)
+                .excludePathPattern("/**", OPTIONS)
+                .includePathPattern("/api/v1/**", GET, POST)
+                .excludePathPattern("/api/v1/auth/sign-up", POST)
                 ;
     }
 

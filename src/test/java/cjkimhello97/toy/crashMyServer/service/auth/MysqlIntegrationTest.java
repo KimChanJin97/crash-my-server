@@ -4,7 +4,7 @@ import static cjkimhello97.toy.crashMyServer.auth.exception.AuthExceptionType.NI
 import static cjkimhello97.toy.crashMyServer.service.auth.testdata.AuthServiceTestDataBuilder.*;
 
 import cjkimhello97.toy.crashMyServer.IntegrationTest;
-import cjkimhello97.toy.crashMyServer.auth.controller.dto.SigninResponse;
+import cjkimhello97.toy.crashMyServer.auth.controller.dto.SignInResponse;
 import cjkimhello97.toy.crashMyServer.auth.exception.AuthException;
 import cjkimhello97.toy.crashMyServer.auth.infrastructure.JwtProvider;
 import cjkimhello97.toy.crashMyServer.auth.service.AuthService;
@@ -12,7 +12,6 @@ import cjkimhello97.toy.crashMyServer.auth.service.dto.SignupRequest;
 import cjkimhello97.toy.crashMyServer.member.domain.Member;
 import cjkimhello97.toy.crashMyServer.member.repository.MemberRepository;
 import cjkimhello97.toy.crashMyServer.service.auth.testdata.AuthServiceFixtureObject;
-import cjkimhello97.toy.crashMyServer.service.auth.testdata.AuthServiceTestDataBuilder;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -46,7 +45,7 @@ public class MysqlIntegrationTest extends IntegrationTest {
 
         // then: 닉네임과 비밀번호가 존재하면 로그인 처리되어야 한다
         Member member = memberRepository.findByNickname(nickname).get();
-        SigninResponse signinResponse = authService.signIn(member, password);
+        SignInResponse signinResponse = authService.signIn(member, password);
 
         Assertions.assertNotNull(signinResponse.accessToken());
         Assertions.assertNotNull(signinResponse.refreshToken());
@@ -94,14 +93,14 @@ public class MysqlIntegrationTest extends IntegrationTest {
         SignupRequest signupRequestOfB = signupRequestBuilder().nickname("bbb").build();
 
         // when: 회원가입 요청
-        SigninResponse signinResponseOfA = authService.signUp(signupRequestOfA);
-        SigninResponse signinResponseOfB = authService.signUp(signupRequestOfB);
+        SignInResponse signInResponseOfA = authService.signUp(signupRequestOfA);
+        SignInResponse signInResponseOfB = authService.signUp(signupRequestOfB);
 
         entityManager.flush();
         entityManager.clear();
 
-        String accessTokenOfA = signinResponseOfA.accessToken();
-        String accessTokenOfB = signinResponseOfB.accessToken();
+        String accessTokenOfA = signInResponseOfA.accessToken();
+        String accessTokenOfB = signInResponseOfB.accessToken();
 
         Long memberIdOfA = jwtProvider.extractId(accessTokenOfA);
         Long memberIdOfB = jwtProvider.extractId(accessTokenOfB);
