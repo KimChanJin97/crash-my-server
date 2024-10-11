@@ -101,7 +101,7 @@ public class AuthController {
         return ResponseEntity.ok(authService.reissueTokens(memberId, reissueRequest));
     }
 
-    @GetMapping("/sign-out")
+    @PostMapping("/sign-out")
     @Operation(
             summary = "[ HTTP ] 로그아웃 API",
             description = """
