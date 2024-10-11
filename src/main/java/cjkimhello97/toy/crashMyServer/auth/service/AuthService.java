@@ -1,22 +1,29 @@
 package cjkimhello97.toy.crashMyServer.auth.service;
 
+import static cjkimhello97.toy.crashMyServer.auth.exception.AuthExceptionType.*;
 import static cjkimhello97.toy.crashMyServer.auth.exception.AuthExceptionType.INVALID_TOKEN;
 import static cjkimhello97.toy.crashMyServer.auth.exception.AuthExceptionType.NICKNAME_EXCEED_LENGTH_TEN;
 import static cjkimhello97.toy.crashMyServer.auth.exception.AuthExceptionType.WRONG_PASSWORD;
+import static java.lang.Boolean.*;
 
-import cjkimhello97.toy.crashMyServer.auth.controller.dto.SigninResponse;
+import cjkimhello97.toy.crashMyServer.auth.controller.dto.SignInResponse;
+import cjkimhello97.toy.crashMyServer.auth.controller.dto.SignOutResponse;
 import cjkimhello97.toy.crashMyServer.auth.controller.dto.TokenResponse;
 import cjkimhello97.toy.crashMyServer.auth.exception.AuthException;
+import cjkimhello97.toy.crashMyServer.auth.exception.AuthExceptionType;
 import cjkimhello97.toy.crashMyServer.auth.infrastructure.JwtProvider;
 import cjkimhello97.toy.crashMyServer.auth.service.dto.ReissueRequest;
 import cjkimhello97.toy.crashMyServer.auth.service.dto.SignupRequest;
+import cjkimhello97.toy.crashMyServer.auth.support.AuthenticationExtractor;
 import cjkimhello97.toy.crashMyServer.click.domain.Click;
 import cjkimhello97.toy.crashMyServer.click.repository.ClickRepository;
 import cjkimhello97.toy.crashMyServer.member.domain.Member;
 import cjkimhello97.toy.crashMyServer.member.repository.MemberRepository;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,6 +33,9 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class AuthService {
 
+    @Value("${jwt.sign-out-time}")
+    private Long signOutTime;
+
     private final JwtProvider jwtProvider;
     private final PasswordEncoder passwordEncoder;
     private final MemberRepository memberRepository;
@@ -33,7 +43,7 @@ public class AuthService {
     private final RedisTokenService redisTokenService;
 
     @Transactional
-    public SigninResponse signUp(SignupRequest signUpRequest) {
+    public SignInResponse signUp(SignupRequest signUpRequest) {
         String nickname = signUpRequest.nickname();
         String password = signUpRequest.password();
 
@@ -60,7 +70,7 @@ public class AuthService {
         return signIn(member, password);
     }
 
-    public SigninResponse signIn(Member savedMember, String password) {
+    public SignInResponse signIn(Member savedMember, String password) {
         // 닉네임 존재 O && 비밀번호 존재 X = 예외
         if (!passwordEncoder.matches(password, savedMember.getPassword())) {
             throw new AuthException(WRONG_PASSWORD);
@@ -68,7 +78,7 @@ public class AuthService {
         // 닉네임 존재 O && 비밀번호 존재 O = 로그인
         String accessToken = jwtProvider.createAccessToken(savedMember.getMemberId());
         String refreshToken = jwtProvider.createRefreshToken(savedMember.getMemberId());
-        return new SigninResponse(accessToken, refreshToken);
+        return new SignInResponse(accessToken, refreshToken);
     }
 
     @Transactional
@@ -85,6 +95,17 @@ public class AuthService {
         redisTokenService.setRefreshToken(memberId, newRefreshToken);
 
         return new TokenResponse(newAccessToken, newRefreshToken);
+    }
+
+    @Transactional
+    public SignOutResponse signOut(HttpServletRequest request, Long memberId) {
+        String accessToken = AuthenticationExtractor.extractAccessToken(request)
+                .orElseThrow(() -> new AuthException(UNAUTHORIZED));
+
+        redisTokenService.deleteRefreshToken(String.valueOf(memberId));
+        redisTokenService.setAccessTokenSignOut(accessToken, signOutTime);
+
+        return new SignOutResponse(TRUE);
     }
 
     private void validateNickname(String nickname) {
