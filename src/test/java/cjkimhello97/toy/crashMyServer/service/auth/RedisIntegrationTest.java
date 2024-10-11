@@ -1,7 +1,7 @@
 package cjkimhello97.toy.crashMyServer.service.auth;
 
 import cjkimhello97.toy.crashMyServer.IntegrationTest;
-import cjkimhello97.toy.crashMyServer.auth.controller.dto.SigninResponse;
+import cjkimhello97.toy.crashMyServer.auth.controller.dto.SignInResponse;
 import cjkimhello97.toy.crashMyServer.auth.controller.dto.TokenResponse;
 import cjkimhello97.toy.crashMyServer.auth.infrastructure.JwtProvider;
 import cjkimhello97.toy.crashMyServer.auth.service.AuthService;
@@ -37,7 +37,7 @@ public class RedisIntegrationTest extends IntegrationTest {
         SignupRequest signupRequest = AuthServiceFixtureObject.signupRequest();
 
         // when: 회원가입 요청
-        SigninResponse signinResponse = authService.signUp(signupRequest);
+        SignInResponse signinResponse = authService.signUp(signupRequest);
         String refreshToken = signinResponse.refreshToken();
 
         Long memberId = jwtProvider.extractId(refreshToken);
@@ -52,7 +52,7 @@ public class RedisIntegrationTest extends IntegrationTest {
     void 토큰_재발행() {
         // given: 회원가입 요청 DTO 생성
         SignupRequest signupRequest = AuthServiceFixtureObject.signupRequest();
-        SigninResponse signinResponse = authService.signUp(signupRequest);
+        SignInResponse signinResponse = authService.signUp(signupRequest);
         String refreshToken = signinResponse.refreshToken();
 
         // given: 토큰 재발행 요청 DTO 생성
@@ -79,8 +79,8 @@ public class RedisIntegrationTest extends IntegrationTest {
         SignupRequest signupRequestOfA = AuthServiceTestDataBuilder.signupRequestBuilder()
                 .nickname("aaa")
                 .build();
-        SigninResponse signinResponseOfA = authService.signUp(signupRequestOfA);
-        String refreshTokenOfA = signinResponseOfA.refreshToken();
+        SignInResponse signInResponseOfA = authService.signUp(signupRequestOfA);
+        String refreshTokenOfA = signInResponseOfA.refreshToken();
 
         entityManager.flush();
         entityManager.clear();
@@ -88,8 +88,8 @@ public class RedisIntegrationTest extends IntegrationTest {
         SignupRequest signupRequestOfB = AuthServiceTestDataBuilder.signupRequestBuilder()
                 .nickname("bbb")
                 .build();
-        SigninResponse signinResponseOfB = authService.signUp(signupRequestOfB);
-        String refreshTokenOfB = signinResponseOfB.refreshToken();
+        SignInResponse signInResponseOfB = authService.signUp(signupRequestOfB);
+        String refreshTokenOfB = signInResponseOfB.refreshToken();
 
         entityManager.flush();
         entityManager.clear();

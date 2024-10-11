@@ -1,6 +1,6 @@
 package cjkimhello97.toy.crashMyServer.service.chat;
 
-import static cjkimhello97.toy.crashMyServer.chat.exception.ChatExceptionType.MEMBER_CHAT_ROOM_TABLE_NOT_EXIST;
+import static cjkimhello97.toy.crashMyServer.chat.exception.ChatExceptionType.ALREADY_LEFT_CHAT_ROOM;
 
 import cjkimhello97.toy.crashMyServer.IntegrationTest;
 import cjkimhello97.toy.crashMyServer.auth.service.AuthService;
@@ -139,6 +139,6 @@ public class MysqlIntegrationTest extends IntegrationTest {
         ChatException chatException = Assertions.assertThrows(ChatException.class, () -> {
             groupChatService.getGroupChatMessages(CHAT_ROOM_ID, member.getMemberId());
         });
-        Assertions.assertEquals(chatException.getExceptionType(), MEMBER_CHAT_ROOM_TABLE_NOT_EXIST);
+        Assertions.assertEquals(chatException.getExceptionType(), ALREADY_LEFT_CHAT_ROOM);
     }
 }
