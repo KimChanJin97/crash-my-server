@@ -18,6 +18,7 @@ public class TokenReissueInterceptor implements HandlerInterceptor {
 
     private final JwtProvider jwtProvider;
     private final AuthenticationContext authenticationContext;
+    private final TokenBlackListInterceptor tokenBlackListInterceptor;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
@@ -27,6 +28,6 @@ public class TokenReissueInterceptor implements HandlerInterceptor {
         Long memberId = jwtProvider.extractIdWithoutExpiration(accessToken);
         authenticationContext.setAuthentication(memberId);
 
-        return true;
+        return tokenBlackListInterceptor.preHandle(request, response, handler);
     }
 }
