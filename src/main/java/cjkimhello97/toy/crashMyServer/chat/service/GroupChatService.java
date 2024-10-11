@@ -120,18 +120,21 @@ public class GroupChatService {
 
     public GroupChatMessageResponses getGroupChatMessages(Long chatRoomId, Long senderId) {
         MemberChatRoom memberChatRoom = getMemberChatRoomByMemberIdAndChatRoomId(senderId, chatRoomId);
+
         List<GroupChatMessageResponse> groupChatMessageResponses = chatMessageRepository
                 .findAllByChatRoomIdAndCreatedAtGreaterThanEqual(chatRoomId, memberChatRoom.getJoinedAt())
                 .stream()
                 .map(chatMessage -> modelMapper.map(chatMessage, GroupChatMessageResponse.class))
                 .collect(Collectors.toList());
+
         return new GroupChatMessageResponses(groupChatMessageResponses);
     }
 
     @Transactional
     public void leaveGroupChatRoom(Long chatRoomId, Long senderId) {
-        String senderNickname = memberService.getMemberNicknameByMemberId(senderId);
+        getMemberChatRoomByMemberIdAndChatRoomId(senderId, chatRoomId);
 
+        String senderNickname = memberService.getMemberNicknameByMemberId(senderId);
         KafkaChatMessageRequest kafkaRequest = KafkaChatMessageRequest.builder()
                 .uuid(String.valueOf(UUID.randomUUID()))
                 .chatRoomId(chatRoomId)
@@ -143,6 +146,7 @@ public class GroupChatService {
 
         ChatRoom chatRoom = getChatRoomByChatRoomId(chatRoomId);
         Member sender = memberService.getMemberByMemberId(senderId);
+
         sender.removeChatRoom(chatRoom);
     }
 
