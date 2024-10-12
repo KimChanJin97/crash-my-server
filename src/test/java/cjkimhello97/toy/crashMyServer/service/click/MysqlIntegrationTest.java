@@ -68,7 +68,7 @@ public class MysqlIntegrationTest extends IntegrationTest {
     @Test
     @DisplayName("[ CLICK ] MYSQL TEST 2")
     void 클릭하면_그에_따라_클릭_랭킹이_업데이트된다() {
-        // given & when: A가 한번 클릭
+        // given & when: A가 1번 클릭
         clickService.click(memberA.getMemberId());
 
         Click clickOfA = clickService.getTopTenClicks().get(0); // 내림차순 정렬이므로 A가 1등
@@ -79,13 +79,13 @@ public class MysqlIntegrationTest extends IntegrationTest {
         Member memberB = clickOfB.getMember();
         Double countOfB = clickOfB.getCount();
 
-        // then: 총 클릭을 1번한 A가 1등, 총 클릭을 0번한 B가 2등이다
+        // then: 총 클릭을 1번한 A가 클릭 횟수 2회로 1등, 총 클릭을 0번한 클릭 횟수 1회로 B가 2등이다
         Assertions.assertEquals(this.memberA, memberA);
-        Assertions.assertEquals(countOfA, 1D);
+        Assertions.assertEquals(countOfA, 2D);
         Assertions.assertEquals(this.memberB, memberB);
-        Assertions.assertEquals(countOfB, 0D);
+        Assertions.assertEquals(countOfB, 1D);
 
-        // given & when: B가 두번 클릭
+        // given & when: B가 2번 클릭
         clickService.click(this.memberB.getMemberId());
         clickService.click(this.memberB.getMemberId());
 
@@ -97,10 +97,10 @@ public class MysqlIntegrationTest extends IntegrationTest {
         memberA = clickOfA.getMember();
         countOfA = clickOfA.getCount();
 
-        // then: 총 클릭을 2번한 B가 1등, 총 클릭을 1번한 A가 2등이다
+        // then: 총 클릭을 2번한 B가 클릭 횟수 3회로 1등, 총 클릭을 1번한 클릭 횟수 2회로 A가 2등이다
         Assertions.assertEquals(this.memberB, memberB);
-        Assertions.assertEquals(countOfB, 2D);
+        Assertions.assertEquals(countOfB, 3D);
         Assertions.assertEquals(this.memberA, memberA);
-        Assertions.assertEquals(countOfA, 1D);
+        Assertions.assertEquals(countOfA, 2D);
     }
 }

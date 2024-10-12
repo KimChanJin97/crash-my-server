@@ -12,6 +12,7 @@ import cjkimhello97.toy.crashMyServer.chat.service.dto.GroupChatMessageRequest;
 import cjkimhello97.toy.crashMyServer.member.domain.Member;
 import cjkimhello97.toy.crashMyServer.member.repository.MemberRepository;
 import cjkimhello97.toy.crashMyServer.service.auth.testdata.AuthServiceFixtureObject;
+import cjkimhello97.toy.crashMyServer.service.auth.testdata.AuthServiceTestDataBuilder;
 import cjkimhello97.toy.crashMyServer.service.chat.testdata.GroupChatServiceFixtureObject;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
@@ -32,6 +33,7 @@ public class MongoIntegrationTest extends IntegrationTest {
     @Autowired
     private ChatMessageRepository chatMessageRepository;
 
+    private Member admin;
     private Member member;
     private final String CHAT_ROOM_NAME = "임의의 채팅방 이름";
     private final Long CHAT_ROOM_ID = 1L;
@@ -40,12 +42,21 @@ public class MongoIntegrationTest extends IntegrationTest {
     @DisplayName("[ CHAT ] MONGO TEST 1")
     void 전송한_채팅_메시지가_저장되어야_한다() {
         // given: 회원가입
-        SignupRequest signupRequest = AuthServiceFixtureObject.signupRequest();
-        authService.signUp(signupRequest);
-        member = memberRepository.findByNickname(signupRequest.nickname()).get();
+        SignupRequest signupRequestOfAdmin = AuthServiceTestDataBuilder.signupRequestBuilder()
+                .nickname("admin")
+                .build();
+        SignupRequest signupRequestOfMember = AuthServiceTestDataBuilder.signupRequestBuilder()
+                .nickname("aaa")
+                .build();
+
+        authService.signUp(signupRequestOfAdmin);
+        authService.signUp(signupRequestOfMember);
+
+        admin = memberRepository.findByNickname(signupRequestOfAdmin.nickname()).get();
+        member = memberRepository.findByNickname(signupRequestOfMember.nickname()).get();
 
         // given: 채팅방 생성
-        groupChatService.createGroupChatRoom(member.getMemberId(), CHAT_ROOM_NAME);
+        groupChatService.createGroupChatRoom(admin.getMemberId(), CHAT_ROOM_NAME);
 
         // given: 채팅방 입장
         groupChatService.enterGroupChatRoom(CHAT_ROOM_ID, member.getMemberId());

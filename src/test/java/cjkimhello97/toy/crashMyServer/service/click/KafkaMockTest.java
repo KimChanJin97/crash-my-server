@@ -1,5 +1,7 @@
 package cjkimhello97.toy.crashMyServer.service.click;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import cjkimhello97.toy.crashMyServer.IntegrationTest;
 import cjkimhello97.toy.crashMyServer.auth.infrastructure.JwtProvider;
 import cjkimhello97.toy.crashMyServer.auth.service.AuthService;
@@ -14,6 +16,9 @@ import cjkimhello97.toy.crashMyServer.member.domain.Member;
 import cjkimhello97.toy.crashMyServer.member.repository.MemberRepository;
 import cjkimhello97.toy.crashMyServer.service.auth.testdata.AuthServiceTestDataBuilder;
 import cjkimhello97.toy.crashMyServer.service.click.testdata.ClickServiceFixtureObject;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Assertions;
@@ -107,8 +112,13 @@ public class KafkaMockTest extends IntegrationTest {
         Mockito.when(clickRepository.findByMemberMemberId(memberB.getMemberId()))
                 .thenReturn(Optional.of(clickOfB));
 
+        List<Click> clicks = new ArrayList<>();
+        clicks.add(clickOfA);
+        clicks.add(clickOfB);
+        Collections.sort(clicks);
+
         Mockito.when(clickRepository.findTop10ClicksByCountDesc(PageRequest.of(0, 10)))
-                .thenReturn(List.of(clickOfA, clickOfB));
+                .thenReturn(clicks);
     }
 
     @Test
@@ -125,8 +135,10 @@ public class KafkaMockTest extends IntegrationTest {
         ArgumentCaptor<KafkaClickRequest> clickRequestCaptor = ArgumentCaptor.forClass(KafkaClickRequest.class);
         Mockito.verify(kafkaClickRequestKafkaTemplate).send(clickTopicCaptor.capture(), clickRequestCaptor.capture());
 
-        Assertions.assertEquals("click", clickTopicCaptor.getValue());
-        Assertions.assertEquals(kafkaClickRequest, clickRequestCaptor.getValue());
+        assertEquals("click", clickTopicCaptor.getValue());
+
+        assertEquals(kafkaClickRequest.getNickname(), clickRequestCaptor.getValue().getNickname());
+        assertEquals(kafkaClickRequest.getCount(), clickRequestCaptor.getValue().getCount());
     }
 
     @Test
@@ -143,7 +155,15 @@ public class KafkaMockTest extends IntegrationTest {
         ArgumentCaptor<KafkaClickRankRequest> clickRankRequestCaptor = ArgumentCaptor.forClass(KafkaClickRankRequest.class);
         Mockito.verify(kafkaClickRankRequestKafkaTemplate).send(clickRankTopicCaptor.capture(), clickRankRequestCaptor.capture());
 
-        Assertions.assertEquals("click-rank", clickRankTopicCaptor.getValue());
-        Assertions.assertEquals(kafkaClickRankRequest, clickRankRequestCaptor.getValue());
+        assertEquals("click-rank", clickRankTopicCaptor.getValue());
+
+        assertEquals(
+                kafkaClickRankRequest.getClickRank().get(memberA.getNickname()),
+                clickRankRequestCaptor.getValue().getClickRank().get(memberA.getNickname())
+        );
+        assertEquals(
+                kafkaClickRankRequest.getClickRank().get(memberB.getNickname()),
+                clickRankRequestCaptor.getValue().getClickRank().get(memberB.getNickname())
+        );
     }
 }
