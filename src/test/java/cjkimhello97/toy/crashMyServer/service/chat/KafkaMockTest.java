@@ -1,5 +1,8 @@
 package cjkimhello97.toy.crashMyServer.service.chat;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
 import cjkimhello97.toy.crashMyServer.IntegrationTest;
 import cjkimhello97.toy.crashMyServer.auth.infrastructure.JwtProvider;
 import cjkimhello97.toy.crashMyServer.auth.service.AuthService;
@@ -88,9 +91,9 @@ public class KafkaMockTest extends IntegrationTest {
                 .password(passwordEncoder.encode(password))
                 .build();
 
-        Mockito.when(memberRepository.findByNickname(signupRequest.nickname()))
+        when(memberRepository.findByNickname(signupRequest.nickname()))
                 .thenReturn(Optional.of(member));
-        Mockito.when(passwordEncoder.matches(password, member.getPassword()))
+        when(passwordEncoder.matches(password, member.getPassword()))
                 .thenReturn(true);
 
         authService.signUp(signupRequest);
@@ -102,9 +105,9 @@ public class KafkaMockTest extends IntegrationTest {
                 .host(member)
                 .build();
 
-        Mockito.when(memberService.getMemberByMemberId(member.getMemberId()))
+        when(memberService.getMemberByMemberId(member.getMemberId()))
                 .thenReturn(member);
-        Mockito.when(chatRoomRepository.save(chatRoom))
+        when(chatRoomRepository.save(chatRoom))
                 .thenReturn(chatRoom);
 
         chatRoomRepository.save(chatRoom);
@@ -121,11 +124,11 @@ public class KafkaMockTest extends IntegrationTest {
                 .joinedAt(LocalDateTime.now())
                 .build();
 
-        Mockito.when(chatRoomRepository.findByChatRoomId(CHAT_ROOM_ID))
+        when(chatRoomRepository.findByChatRoomId(CHAT_ROOM_ID))
                 .thenReturn(Optional.of(chatRoom));
-        Mockito.when(memberChatRoomRepository.findByMemberMemberIdAndChatRoomChatRoomId(MEMBER_ID, CHAT_ROOM_ID))
+        when(memberChatRoomRepository.findByMemberMemberIdAndChatRoomChatRoomId(MEMBER_ID, CHAT_ROOM_ID))
                 .thenReturn(Optional.of(memberChatRoom));
-        Mockito.when(memberService.getMemberNicknameByMemberId(member.getMemberId()))
+        when(memberService.getMemberNicknameByMemberId(member.getMemberId()))
                 .thenReturn(member.getNickname());
     }
 
@@ -142,10 +145,14 @@ public class KafkaMockTest extends IntegrationTest {
         // then: 채팅방에 입장하면 카프카 입장 메시지가 발행되어야_한다
         ArgumentCaptor<String> topicCaptor = ArgumentCaptor.forClass(String.class);
         ArgumentCaptor<KafkaChatMessageRequest> requestCaptor = ArgumentCaptor.forClass(KafkaChatMessageRequest.class);
-        Mockito.verify(kafkaChatMessageRequestKafkaTemplate).send(topicCaptor.capture(), requestCaptor.capture());
+        verify(kafkaChatMessageRequestKafkaTemplate).send(topicCaptor.capture(), requestCaptor.capture());
 
-        Assertions.assertEquals("enter", topicCaptor.getValue());
-        Assertions.assertEquals(kafkaEnterRequest, requestCaptor.getValue());
+        assertEquals("enter", topicCaptor.getValue());
+
+        assertEquals(kafkaEnterRequest.getSenderNickname(), requestCaptor.getValue().getSenderNickname());
+        assertEquals(kafkaEnterRequest.getSenderId(), requestCaptor.getValue().getSenderId());
+        assertEquals(kafkaEnterRequest.getChatRoomId(), requestCaptor.getValue().getChatRoomId());
+        assertEquals(kafkaEnterRequest.getContent(), requestCaptor.getValue().getContent());
     }
 
     @Test
@@ -156,19 +163,19 @@ public class KafkaMockTest extends IntegrationTest {
         GroupChatMessageRequest groupChatMessageRequest = GroupChatServiceFixtureObject.groupChatMessageRequest();
 
         // when: 채팅 메시지 전송
-        Mockito.when(memberService.getMemberByNickname(kafkaChatMessageRequest.getSenderNickname()))
+        when(memberService.getMemberByNickname(kafkaChatMessageRequest.getSenderNickname()))
                 .thenReturn(member);
-        Mockito.when(modelMapper.map(groupChatMessageRequest, KafkaChatMessageRequest.class))
+        when(modelMapper.map(groupChatMessageRequest, KafkaChatMessageRequest.class))
                 .thenReturn(kafkaChatMessageRequest);
         groupChatService.saveGroupChatMessage(groupChatMessageRequest);
 
         // then: 채팅 메시지를 전송하면 카프카 채팅 메시지 전송 메시지가 발행되어야 한다
         ArgumentCaptor<String> topicCaptor = ArgumentCaptor.forClass(String.class);
         ArgumentCaptor<KafkaChatMessageRequest> requestCaptor = ArgumentCaptor.forClass(KafkaChatMessageRequest.class);
-        Mockito.verify(kafkaChatMessageRequestKafkaTemplate).send(topicCaptor.capture(), requestCaptor.capture());
+        verify(kafkaChatMessageRequestKafkaTemplate).send(topicCaptor.capture(), requestCaptor.capture());
 
-        Assertions.assertEquals("group-chat", topicCaptor.getValue());
-        Assertions.assertEquals(kafkaChatMessageRequest, requestCaptor.getValue());
+        assertEquals("group-chat", topicCaptor.getValue());
+        assertEquals(kafkaChatMessageRequest, requestCaptor.getValue());
     }
 
     @Test
@@ -184,10 +191,14 @@ public class KafkaMockTest extends IntegrationTest {
         // then: 채팅방을 퇴장하면 카프카 퇴장 메시지가 발행되어야 한다
         ArgumentCaptor<String> topicCaptor = ArgumentCaptor.forClass(String.class);
         ArgumentCaptor<KafkaChatMessageRequest> requestCaptor = ArgumentCaptor.forClass(KafkaChatMessageRequest.class);
-        Mockito.verify(kafkaChatMessageRequestKafkaTemplate).send(topicCaptor.capture(), requestCaptor.capture());
+        verify(kafkaChatMessageRequestKafkaTemplate).send(topicCaptor.capture(), requestCaptor.capture());
 
-        Assertions.assertEquals("leave", topicCaptor.getValue());
-        Assertions.assertEquals(kafkaLeaveRequest, requestCaptor.getValue());
+        assertEquals("leave", topicCaptor.getValue());
+
+        assertEquals(kafkaLeaveRequest.getSenderNickname(), requestCaptor.getValue().getSenderNickname());
+        assertEquals(kafkaLeaveRequest.getSenderId(), requestCaptor.getValue().getSenderId());
+        assertEquals(kafkaLeaveRequest.getChatRoomId(), requestCaptor.getValue().getChatRoomId());
+        assertEquals(kafkaLeaveRequest.getContent(), requestCaptor.getValue().getContent());
     }
 }
 

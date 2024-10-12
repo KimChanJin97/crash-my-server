@@ -13,7 +13,7 @@ import cjkimhello97.toy.crashMyServer.chat.service.GroupChatService;
 import cjkimhello97.toy.crashMyServer.chat.service.dto.GroupChatMessageRequest;
 import cjkimhello97.toy.crashMyServer.member.domain.Member;
 import cjkimhello97.toy.crashMyServer.member.repository.MemberRepository;
-import cjkimhello97.toy.crashMyServer.service.auth.testdata.AuthServiceFixtureObject;
+import cjkimhello97.toy.crashMyServer.service.auth.testdata.AuthServiceTestDataBuilder;
 import cjkimhello97.toy.crashMyServer.service.chat.testdata.GroupChatServiceFixtureObject;
 import java.util.List;
 import java.util.Set;
@@ -35,6 +35,7 @@ public class MysqlIntegrationTest extends IntegrationTest {
     @Autowired
     private GroupChatService groupChatService;
 
+    private Member admin;
     private Member member;
     private final String CHAT_ROOM_NAME = "임의의 채팅방 이름";
     private final Long CHAT_ROOM_ID = 1L;
@@ -42,20 +43,28 @@ public class MysqlIntegrationTest extends IntegrationTest {
     @BeforeEach
     void beforeEach() {
         // 회원가입
-        SignupRequest signupRequest = AuthServiceFixtureObject.signupRequest();
-        authService.signUp(signupRequest);
+        SignupRequest signupRequestOfAdmin = AuthServiceTestDataBuilder.signupRequestBuilder()
+                .nickname("admin")
+                .build();
+        SignupRequest signupRequestOfMember = AuthServiceTestDataBuilder.signupRequestBuilder()
+                .nickname("aaa")
+                .build();
 
-        member = memberRepository.findByNickname(signupRequest.nickname()).get();
+        authService.signUp(signupRequestOfAdmin);
+        authService.signUp(signupRequestOfMember);
+
+        admin = memberRepository.findByNickname(signupRequestOfAdmin.nickname()).get();
+        member = memberRepository.findByNickname(signupRequestOfMember.nickname()).get();
     }
 
     @Test
     @DisplayName("[ CHAT ] MYSQL TEST 1")
     void 지정한_이름으로_채팅방이_생성되어야_한다() {
         // given: 채팅방 생성
-        Long chatRoomId = groupChatService.createGroupChatRoom(member.getMemberId(), CHAT_ROOM_NAME);
+        groupChatService.createGroupChatRoom(admin.getMemberId(), CHAT_ROOM_NAME);
 
         // when: 채팅방 입장
-        ChatRoom chatRoom = groupChatService.getChatRoomByChatRoomId(chatRoomId);
+        ChatRoom chatRoom = groupChatService.getChatRoomByChatRoomId(CHAT_ROOM_ID);
 
         // then: 지정한 이름으로 채팅방이 생성되어야 한다
         Assertions.assertEquals(chatRoom.getChatRoomName(), CHAT_ROOM_NAME);
@@ -65,10 +74,10 @@ public class MysqlIntegrationTest extends IntegrationTest {
     @DisplayName("[ CHAT ] MYSQL TEST 2")
     void 채팅방에_입장했다면_채팅방_목록에_포함되어_있어야_한다() {
         // given: 채팅방 생성
-        Long chatRoomId = groupChatService.createGroupChatRoom(member.getMemberId(), CHAT_ROOM_NAME);
+        groupChatService.createGroupChatRoom(admin.getMemberId(), CHAT_ROOM_NAME);
 
         // when: 채팅방 입장
-        ChatRoom chatRoom = groupChatService.getChatRoomByChatRoomId(chatRoomId);
+        ChatRoom chatRoom = groupChatService.getChatRoomByChatRoomId(CHAT_ROOM_ID);
         groupChatService.enterGroupChatRoom(CHAT_ROOM_ID, member.getMemberId());
 
         // then: 채팅방에 입장했다면 채팅방 목록에 포함되어 있어야 한다
@@ -79,11 +88,12 @@ public class MysqlIntegrationTest extends IntegrationTest {
     @Test
     @DisplayName("[ CHAT ] MYSQL TEST 3")
     void 채팅방을_퇴장했다면_채팅방_목록에_포함되어_있지_않아야_한다() {
-        // given: 채팅방 생성
-        Long chatRoomId = groupChatService.createGroupChatRoom(member.getMemberId(), CHAT_ROOM_NAME);
+        // given: 채팅방 생성 및 입장
+        groupChatService.createGroupChatRoom(admin.getMemberId(), CHAT_ROOM_NAME);
+        groupChatService.enterGroupChatRoom(CHAT_ROOM_ID, member.getMemberId());
 
         // when: 채팅방 퇴장
-        ChatRoom chatRoom = groupChatService.getChatRoomByChatRoomId(chatRoomId);
+        ChatRoom chatRoom = groupChatService.getChatRoomByChatRoomId(CHAT_ROOM_ID);
         groupChatService.leaveGroupChatRoom(CHAT_ROOM_ID, member.getMemberId());
 
         // then: 채팅방을 퇴장했다면 채팅방 목록에 포함되어 있지 않아야 한다
@@ -94,8 +104,9 @@ public class MysqlIntegrationTest extends IntegrationTest {
     @Test
     @DisplayName("[ CHAT ] MYSQL TEST 4")
     void 채팅_메시지를_3개_전송했다면_사이즈는_3이다() {
-        // given: 채팅방 생성
-        Long chatRoomId = groupChatService.createGroupChatRoom(member.getMemberId(), CHAT_ROOM_NAME);
+        // given: 채팅방 생성 및 입장
+        groupChatService.createGroupChatRoom(admin.getMemberId(), CHAT_ROOM_NAME);
+        groupChatService.enterGroupChatRoom(CHAT_ROOM_ID, member.getMemberId());
 
         // when: 채팅 메시지 3번 전송
         GroupChatMessageRequest groupChatMessageRequest = GroupChatServiceFixtureObject.groupChatMessageRequest();
@@ -115,8 +126,9 @@ public class MysqlIntegrationTest extends IntegrationTest {
     @Test
     @DisplayName("[ CHAT ] MYSQL TEST 5")
     void 채팅방을_퇴장했다면_채팅_메시지가_조회되지_않아야_한다() {
-        // given: 채팅방 생성
-        Long chatRoomId = groupChatService.createGroupChatRoom(member.getMemberId(), CHAT_ROOM_NAME);
+        // given: 채팅방 생성 및 입장
+        groupChatService.createGroupChatRoom(admin.getMemberId(), CHAT_ROOM_NAME);
+        groupChatService.enterGroupChatRoom(CHAT_ROOM_ID, member.getMemberId());
 
         // when: 채팅 메시지 3번 전송
         GroupChatMessageRequest groupChatMessageRequest = GroupChatServiceFixtureObject.groupChatMessageRequest();
