@@ -108,7 +108,7 @@ public class AuthService {
     }
 
     private void validateNickname(String nickname) {
-        if (nickname.length() > 10) {
+        if (nickname.length() > 20) {
             throw new AuthException(NICKNAME_TOO_LONG);
         }
     }
