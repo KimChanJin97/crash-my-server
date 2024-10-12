@@ -18,8 +18,8 @@ This is an interactive platform for server stress testing and real-time monitori
 
 ### Prerequisites
 
-- Node.js (v18 이상)
-- Yarn
+- JAVA (JDK 21 이상)
+- Gradle
 
 ### Installation
 
