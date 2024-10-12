@@ -19,10 +19,14 @@ jobs:
           distribution: 'liberica'
           java-version: '21'
 
-      - name: Make application config files
+      - name: Make init.sql files and application config files
         run: |
+          
+          touch ./init.sql
+          echo "${{ secrets.INIT_SQL }}" > ./init.sql 
+          
           cd ./src/main/resources
-
+          
           touch ./application.yml
           echo "${{ secrets.APPLICATION_YML }}" > ./application.yml
 
