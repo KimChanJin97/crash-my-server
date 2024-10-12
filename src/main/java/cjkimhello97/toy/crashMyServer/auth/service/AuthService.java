@@ -1,16 +1,15 @@
 package cjkimhello97.toy.crashMyServer.auth.service;
 
-import static cjkimhello97.toy.crashMyServer.auth.exception.AuthExceptionType.*;
 import static cjkimhello97.toy.crashMyServer.auth.exception.AuthExceptionType.INVALID_TOKEN;
-import static cjkimhello97.toy.crashMyServer.auth.exception.AuthExceptionType.NICKNAME_EXCEED_LENGTH_TEN;
+import static cjkimhello97.toy.crashMyServer.auth.exception.AuthExceptionType.NICKNAME_TOO_LONG;
+import static cjkimhello97.toy.crashMyServer.auth.exception.AuthExceptionType.UNAUTHORIZED;
 import static cjkimhello97.toy.crashMyServer.auth.exception.AuthExceptionType.WRONG_PASSWORD;
-import static java.lang.Boolean.*;
+import static java.lang.Boolean.TRUE;
 
 import cjkimhello97.toy.crashMyServer.auth.controller.dto.SignInResponse;
 import cjkimhello97.toy.crashMyServer.auth.controller.dto.SignOutResponse;
 import cjkimhello97.toy.crashMyServer.auth.controller.dto.TokenResponse;
 import cjkimhello97.toy.crashMyServer.auth.exception.AuthException;
-import cjkimhello97.toy.crashMyServer.auth.exception.AuthExceptionType;
 import cjkimhello97.toy.crashMyServer.auth.infrastructure.JwtProvider;
 import cjkimhello97.toy.crashMyServer.auth.service.dto.ReissueRequest;
 import cjkimhello97.toy.crashMyServer.auth.service.dto.SignupRequest;
@@ -110,7 +109,7 @@ public class AuthService {
 
     private void validateNickname(String nickname) {
         if (nickname.length() > 10) {
-            throw new AuthException(NICKNAME_EXCEED_LENGTH_TEN);
+            throw new AuthException(NICKNAME_TOO_LONG);
         }
     }
 }

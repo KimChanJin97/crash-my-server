@@ -1,6 +1,6 @@
 package cjkimhello97.toy.crashMyServer.service.auth;
 
-import static cjkimhello97.toy.crashMyServer.auth.exception.AuthExceptionType.NICKNAME_EXCEED_LENGTH_TEN;
+import static cjkimhello97.toy.crashMyServer.auth.exception.AuthExceptionType.NICKNAME_TOO_LONG;
 import static cjkimhello97.toy.crashMyServer.service.auth.testdata.AuthServiceTestDataBuilder.*;
 
 import cjkimhello97.toy.crashMyServer.IntegrationTest;
@@ -134,7 +134,7 @@ public class MysqlIntegrationTest extends IntegrationTest {
         AuthException authException = Assertions.assertThrows(AuthException.class, () -> {
             authService.signUp(badSignupRequest);
         });
-        Assertions.assertEquals(authException.getExceptionType(), NICKNAME_EXCEED_LENGTH_TEN);
+        Assertions.assertEquals(authException.getExceptionType(), NICKNAME_TOO_LONG);
     }
 
 }
