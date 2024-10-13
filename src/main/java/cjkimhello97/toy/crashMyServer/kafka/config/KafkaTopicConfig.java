@@ -22,7 +22,7 @@ public class KafkaTopicConfig {
         Map<String, Object> adminProps = new HashMap<>();
         adminProps.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaConstants.KAFKA_BROKER);
         adminProps.put(AdminClientConfig.REQUEST_TIMEOUT_MS_CONFIG, 5000); // 메타데이터 요청 타임아웃
-        adminProps.put(AdminClientConfig.CONNECTIONS_MAX_IDLE_MS_CONFIG, 60000); // 브로커 연결 유지 최대 시간
+        adminProps.put(AdminClientConfig.CONNECTIONS_MAX_IDLE_MS_CONFIG, 60000); // IDLE 커넥션 유지 시간
         return new KafkaAdmin(adminProps);
     }
 
