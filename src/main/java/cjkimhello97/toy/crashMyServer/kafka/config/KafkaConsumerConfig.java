@@ -1,6 +1,6 @@
 package cjkimhello97.toy.crashMyServer.kafka.config;
 
-import static org.springframework.kafka.listener.ContainerProperties.AckMode.*;
+import static org.springframework.kafka.listener.ContainerProperties.AckMode.MANUAL;
 
 import cjkimhello97.toy.crashMyServer.kafka.constant.KafkaConstants;
 import cjkimhello97.toy.crashMyServer.kafka.dto.KafkaChatMessageRequest;
@@ -17,7 +17,6 @@ import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
-import org.springframework.kafka.listener.ContainerProperties.AckMode;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 
 @EnableKafka
@@ -32,6 +31,7 @@ public class KafkaConsumerConfig {
         ConcurrentKafkaListenerContainerFactory<String, KafkaClickRequest> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.getContainerProperties().setAckMode(MANUAL);
         factory.setConsumerFactory(kafkaClickRequestConsumerFactory());
+        factory.setConcurrency(5); // 컨슈머 스레드 5개 생성 후 병렬 처리
         return factory;
     }
 
@@ -49,6 +49,10 @@ public class KafkaConsumerConfig {
         consumerProps.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, deserializer);
         consumerProps.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest");
         consumerProps.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false"); // 오토 커밋 false
+        consumerProps.put(ConsumerConfig.HEARTBEAT_INTERVAL_MS_CONFIG, 3000); // 하트비트 3초
+        consumerProps.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, 10000); // 세션 타임아웃 10초
+        consumerProps.put(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, 600000); // 폴 인터벌 10분
+        consumerProps.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, 100); // 폴 레코드 100개
         return new DefaultKafkaConsumerFactory<>(consumerProps, new StringDeserializer(), deserializer);
     }
 
@@ -57,6 +61,7 @@ public class KafkaConsumerConfig {
         ConcurrentKafkaListenerContainerFactory<String, KafkaClickRankRequest> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.getContainerProperties().setAckMode(MANUAL);
         factory.setConsumerFactory(kafkaClickRankRequestConsumerFactory());
+        factory.setConcurrency(5); // 컨슈머 스레드 5개 생성 후 병렬 처리
         return factory;
     }
 
@@ -74,6 +79,10 @@ public class KafkaConsumerConfig {
         consumerProps.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, deserializer);
         consumerProps.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest");
         consumerProps.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false"); // 오토 커밋 false
+        consumerProps.put(ConsumerConfig.HEARTBEAT_INTERVAL_MS_CONFIG, 3000); // 하트비트 3초
+        consumerProps.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, 10000); // 세션 타임아웃 10초
+        consumerProps.put(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, 600000); // 폴 인터벌 10분
+        consumerProps.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, 100); // 폴 레코드 100개
         return new DefaultKafkaConsumerFactory<>(consumerProps, new StringDeserializer(), deserializer);
     }
 
@@ -82,6 +91,7 @@ public class KafkaConsumerConfig {
         ConcurrentKafkaListenerContainerFactory<String, KafkaChatMessageRequest> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.getContainerProperties().setAckMode(MANUAL);
         factory.setConsumerFactory(kafkaChatMessageRequestConsumerFactory());
+        factory.setConcurrency(5); // 컨슈머 스레드 5개 생성 후 병렬 처리
         return factory;
     }
 
@@ -99,6 +109,10 @@ public class KafkaConsumerConfig {
         consumerProps.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, deserializer);
         consumerProps.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest");
         consumerProps.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false"); // 오토 커밋 false
+        consumerProps.put(ConsumerConfig.HEARTBEAT_INTERVAL_MS_CONFIG, 3000); // 하트비트 3초
+        consumerProps.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, 10000); // 세션 타임아웃 10초
+        consumerProps.put(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, 600000); // 폴 인터벌 10분
+        consumerProps.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, 100); // 폴 레코드 100개
         return new DefaultKafkaConsumerFactory<>(consumerProps, new StringDeserializer(), deserializer);
     }
 }
