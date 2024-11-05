@@ -1,6 +1,6 @@
 package cjkimhello97.toy.crashMyServer.kafka.config;
 
-import static org.springframework.kafka.listener.ContainerProperties.AckMode.*;
+import static org.springframework.kafka.listener.ContainerProperties.AckMode.MANUAL;
 
 import cjkimhello97.toy.crashMyServer.kafka.constant.KafkaConstants;
 import cjkimhello97.toy.crashMyServer.kafka.dto.KafkaChatMessageRequest;
@@ -17,7 +17,6 @@ import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
-import org.springframework.kafka.listener.ContainerProperties.AckMode;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 
 @EnableKafka
@@ -32,6 +31,7 @@ public class KafkaConsumerConfig {
         ConcurrentKafkaListenerContainerFactory<String, KafkaClickRequest> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.getContainerProperties().setAckMode(MANUAL);
         factory.setConsumerFactory(kafkaClickRequestConsumerFactory());
+        factory.setConcurrency(5); // 컨슈머 스레드 5개 생성 후 병렬 처리
         return factory;
     }
 
@@ -57,6 +57,7 @@ public class KafkaConsumerConfig {
         ConcurrentKafkaListenerContainerFactory<String, KafkaClickRankRequest> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.getContainerProperties().setAckMode(MANUAL);
         factory.setConsumerFactory(kafkaClickRankRequestConsumerFactory());
+        factory.setConcurrency(5); // 컨슈머 스레드 5개 생성 후 병렬 처리
         return factory;
     }
 
@@ -82,6 +83,7 @@ public class KafkaConsumerConfig {
         ConcurrentKafkaListenerContainerFactory<String, KafkaChatMessageRequest> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.getContainerProperties().setAckMode(MANUAL);
         factory.setConsumerFactory(kafkaChatMessageRequestConsumerFactory());
+        factory.setConcurrency(5); // 컨슈머 스레드 5개 생성 후 병렬 처리
         return factory;
     }
 
