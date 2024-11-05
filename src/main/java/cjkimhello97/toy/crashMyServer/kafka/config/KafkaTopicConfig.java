@@ -22,7 +22,7 @@ public class KafkaTopicConfig {
         Map<String, Object> adminProps = new HashMap<>();
         adminProps.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaConstants.KAFKA_BROKER);
         adminProps.put(AdminClientConfig.REQUEST_TIMEOUT_MS_CONFIG, 5000); // 메타데이터 요청 타임아웃
-        adminProps.put(AdminClientConfig.CONNECTIONS_MAX_IDLE_MS_CONFIG, 60000); // IDLE 커넥션 유지 시간
+        adminProps.put(AdminClientConfig.CONNECTIONS_MAX_IDLE_MS_CONFIG, 600000); // IDLE 커넥션 유지 시간
         return new KafkaAdmin(adminProps);
     }
 
@@ -30,7 +30,7 @@ public class KafkaTopicConfig {
     public NewTopic groupChatTopic() {
         return TopicBuilder
                 .name("group-chat")
-                .partitions(100)
+                .partitions(5)
                 .replicas(1)
                 .build();
     }
@@ -39,7 +39,7 @@ public class KafkaTopicConfig {
     public NewTopic enterTopic() {
         return TopicBuilder
                 .name("enter")
-                .partitions(100)
+                .partitions(5)
                 .replicas(1)
                 .build();
     }
@@ -48,7 +48,7 @@ public class KafkaTopicConfig {
     public NewTopic leaveTopic() {
         return TopicBuilder
                 .name("leave")
-                .partitions(100)
+                .partitions(5)
                 .replicas(1)
                 .build();
     }
@@ -57,7 +57,7 @@ public class KafkaTopicConfig {
     public NewTopic clickTopic() {
         return TopicBuilder
                 .name("click")
-                .partitions(100)
+                .partitions(5)
                 .replicas(1)
                 .build();
     }
@@ -66,7 +66,7 @@ public class KafkaTopicConfig {
     public NewTopic clickRankTopic() {
         return TopicBuilder
                 .name("click-rank")
-                .partitions(100)
+                .partitions(5)
                 .replicas(1)
                 .build();
     }
