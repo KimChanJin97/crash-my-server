@@ -17,7 +17,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -45,11 +44,11 @@ public class AuthController {
             @ApiResponse(
                     responseCode = "200",
                     description = """
-                           - 설명 : 발급받은 액세스 토큰은 인증 헤더에, 리프레시 토큰은 로컬 스토리지에 저장해야 합니다. 
-                                   액세스 토큰은 이후 요청부터 Bearer 방식(Bearer aaa.bbb.ccc)으로 담겨져 사용되어야 합니다. 
-                                   리프레시 토큰은 토큰 재발급시 로컬 스토리지로부터 꺼내어 사용되어야 합니다. 
-                           - 응답 형식(로직 1,2) : { "accessToken": "aaa.bbb.ccc", "refreshToken": "ddd.eee.fff" }
-                            """,
+                            - 설명 : 발급받은 액세스 토큰은 인증 헤더에, 리프레시 토큰은 로컬 스토리지에 저장해야 합니다. 
+                                    액세스 토큰은 이후 요청부터 Bearer 방식(Bearer aaa.bbb.ccc)으로 담겨져 사용되어야 합니다. 
+                                    리프레시 토큰은 토큰 재발급시 로컬 스토리지로부터 꺼내어 사용되어야 합니다. 
+                            - 응답 형식(로직 1,2) : { "accessToken": "aaa.bbb.ccc", "refreshToken": "ddd.eee.fff" }
+                             """,
                     content = {@Content(schema = @Schema(implementation = SignInResponse.class))}),
             @ApiResponse(
                     responseCode = "400",
@@ -113,9 +112,9 @@ public class AuthController {
             @ApiResponse(
                     responseCode = "200",
                     description = """
-                           - 설명 : 로그아웃 요청이 정상적으로 이뤄져 반환될 응답 DTO 입니다. 
-                           - 응답 형식 : { "isSignOut": true }
-                            """,
+                            - 설명 : 로그아웃 요청이 정상적으로 이뤄져 반환될 응답 DTO 입니다. 
+                            - 응답 형식 : { "isSignOut": true }
+                             """,
                     content = {@Content(schema = @Schema(implementation = SignInResponse.class))}),
             @ApiResponse(
                     responseCode = "401, 404",

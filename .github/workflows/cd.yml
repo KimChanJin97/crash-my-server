@@ -23,10 +23,6 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ap-northeast-2
 
-      - name: Add Github Actions IP to Security group
-        run: |
-          aws ec2 authorize-security-group-ingress --group-id ${{ secrets.AWS_SG_ID }} --protocol tcp --port 22 --cidr ${{ steps.ip.outputs.ipv4 }}/32
-
       - name: Deploy to EC2
         uses: appleboy/ssh-action@master
         with:
@@ -45,7 +41,3 @@ jobs:
             sudo docker-compose -f docker-compose-prod.yml pull
             sudo docker-compose -f docker-compose-prod.yml up -d
             sudo docker image prune -f
-
-      - name: Remove Github Actions IP From Security Group
-        run: |
-          aws ec2 revoke-security-group-ingress --group-id ${{ secrets.AWS_SG_ID }} --protocol tcp --port 22 --cidr ${{ steps.ip.outputs.ipv4 }}/32
