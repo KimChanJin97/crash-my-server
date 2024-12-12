@@ -75,17 +75,8 @@ This is an interactive platform for server stress testing and real-time monitori
 2. Use the chat window to communicate with other users in real-time.
 3. Check the ranking board to see the top records!
 
-## 📸 Screenshot
-<table>
-  <tr>
-    <td align="center">
-        <img src="https://github.com/user-attachments/assets/2c05e23f-1442-435e-8496-86a9b0da46a5" width="300px;" alt="login"/>
-    </td>
-   <td align="center">
-        <img src="https://github.com/user-attachments/assets/97d00edc-ce13-46ff-bb2f-4ab8423eed07" width="300px;" alt="home"/>
-    </td>
-  </tr>
-</table>
+## 📸 Video
+<img src="src/main/resources/static/video.gif"/>
 
 ## 🛠 Tech Stack
 
