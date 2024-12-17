@@ -19,10 +19,6 @@ public class MemberService {
                 .orElseThrow(() -> new AuthException(MEMBER_NOT_FOUND));
     }
 
-    public String getMemberNicknameByMemberId(Long memberId) {
-        return getMemberByMemberId(memberId).getNickname();
-    }
-
     public Member getMemberByMemberId(Long memberId) {
         return memberRepository.findByMemberId(memberId)
                 .orElseThrow(() -> new AuthException(MEMBER_NOT_FOUND));
