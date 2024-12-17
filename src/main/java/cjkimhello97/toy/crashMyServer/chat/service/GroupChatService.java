@@ -1,8 +1,8 @@
 package cjkimhello97.toy.crashMyServer.chat.service;
 
-import static cjkimhello97.toy.crashMyServer.chat.exception.ChatExceptionType.*;
-import static cjkimhello97.toy.crashMyServer.chat.exception.ChatExceptionType.CHAT_ROOM_NOT_FOUND;
+import static cjkimhello97.toy.crashMyServer.chat.exception.ChatExceptionType.ALREADY_ENTER_CHAT_ROOM;
 import static cjkimhello97.toy.crashMyServer.chat.exception.ChatExceptionType.ALREADY_LEFT_CHAT_ROOM;
+import static cjkimhello97.toy.crashMyServer.chat.exception.ChatExceptionType.CHAT_ROOM_NOT_FOUND;
 import static cjkimhello97.toy.crashMyServer.chat.utils.GroupChatMessageUtils.enterGroupChatRoomMessage;
 import static cjkimhello97.toy.crashMyServer.chat.utils.GroupChatMessageUtils.leaveGroupChatRoomMessage;
 
@@ -14,7 +14,6 @@ import cjkimhello97.toy.crashMyServer.chat.domain.ChatMessage;
 import cjkimhello97.toy.crashMyServer.chat.domain.ChatRoom;
 import cjkimhello97.toy.crashMyServer.chat.domain.MemberChatRoom;
 import cjkimhello97.toy.crashMyServer.chat.exception.ChatException;
-import cjkimhello97.toy.crashMyServer.chat.exception.ChatExceptionType;
 import cjkimhello97.toy.crashMyServer.chat.repository.ChatMessageRepository;
 import cjkimhello97.toy.crashMyServer.chat.repository.ChatRoomRepository;
 import cjkimhello97.toy.crashMyServer.chat.repository.MemberChatRoomRepository;
@@ -22,7 +21,6 @@ import cjkimhello97.toy.crashMyServer.chat.service.dto.GroupChatMessageRequest;
 import cjkimhello97.toy.crashMyServer.kafka.dto.KafkaChatMessageRequest;
 import cjkimhello97.toy.crashMyServer.member.domain.Member;
 import cjkimhello97.toy.crashMyServer.member.service.MemberService;
-import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -61,9 +59,9 @@ public class GroupChatService {
 
     @Transactional
     public void enterGroupChatRoom(Long chatRoomId, Long senderId) {
-        String senderNickname = memberService.getMemberNicknameByMemberId(senderId);
-        ChatRoom chatRoom = getChatRoomByChatRoomId(chatRoomId);
         Member sender = memberService.getMemberByMemberId(senderId);
+        String senderNickname = sender.getNickname();
+        ChatRoom chatRoom = getChatRoomByChatRoomId(chatRoomId);
 
         validateEnterGroupChatRoom(sender, chatRoom);
 
@@ -76,10 +74,6 @@ public class GroupChatService {
                 .build();
         kafkaChatMessageRequestTemplate.send("enter", kafkaRequest);
         sender.addChatRoom(chatRoom);
-
-        // joinedAt이 null로 저장되는 문제 발생 -> @CreatedDate, @PrePersist 실패 -> 직접 중간 테이블 저장
-        MemberChatRoom memberChatRoom = getMemberChatRoomByMemberIdAndChatRoomId(senderId, chatRoomId);
-        memberChatRoom.setJoinedAt(LocalDateTime.now());
     }
 
     @Transactional
@@ -134,19 +128,18 @@ public class GroupChatService {
     public void leaveGroupChatRoom(Long chatRoomId, Long senderId) {
         getMemberChatRoomByMemberIdAndChatRoomId(senderId, chatRoomId);
 
-        String senderNickname = memberService.getMemberNicknameByMemberId(senderId);
+        Member sender = memberService.getMemberByMemberId(senderId);
+        String senderNickname = sender.getNickname();
         KafkaChatMessageRequest kafkaRequest = KafkaChatMessageRequest.builder()
                 .uuid(String.valueOf(UUID.randomUUID()))
                 .chatRoomId(chatRoomId)
                 .senderId(senderId)
-                .senderNickname(senderNickname)
+                .senderNickname(sender.getNickname())
                 .content(leaveGroupChatRoomMessage(senderNickname))
                 .build();
         kafkaChatMessageRequestTemplate.send("leave", kafkaRequest);
 
         ChatRoom chatRoom = getChatRoomByChatRoomId(chatRoomId);
-        Member sender = memberService.getMemberByMemberId(senderId);
-
         sender.removeChatRoom(chatRoom);
     }
 

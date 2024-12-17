@@ -31,7 +31,7 @@ public class KafkaConsumerConfig {
         ConcurrentKafkaListenerContainerFactory<String, KafkaClickRequest> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.getContainerProperties().setAckMode(MANUAL);
         factory.setConsumerFactory(kafkaClickRequestConsumerFactory());
-        factory.setConcurrency(5); // 컨슈머 스레드 5개 생성 후 병렬 처리
+        factory.setConcurrency(5);
         return factory;
     }
 
@@ -61,7 +61,7 @@ public class KafkaConsumerConfig {
         ConcurrentKafkaListenerContainerFactory<String, KafkaClickRankRequest> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.getContainerProperties().setAckMode(MANUAL);
         factory.setConsumerFactory(kafkaClickRankRequestConsumerFactory());
-        factory.setConcurrency(5); // 컨슈머 스레드 5개 생성 후 병렬 처리
+        factory.setConcurrency(5);
         return factory;
     }
 
@@ -91,7 +91,7 @@ public class KafkaConsumerConfig {
         ConcurrentKafkaListenerContainerFactory<String, KafkaChatMessageRequest> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.getContainerProperties().setAckMode(MANUAL);
         factory.setConsumerFactory(kafkaChatMessageRequestConsumerFactory());
-        factory.setConcurrency(5); // 컨슈머 스레드 5개 생성 후 병렬 처리
+        factory.setConcurrency(3);
         return factory;
     }
 

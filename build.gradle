@@ -31,7 +31,7 @@ dependencies {
 	// MySQL
 	implementation 'mysql:mysql-connector-java:8.0.33'
 
-	// AWS Secret Manager
+	// PasswordEncoder
 	implementation "io.awspring.cloud:spring-cloud-starter-aws-secrets-manager-config:2.4.4"
 
 	// MongoDB
@@ -73,10 +73,6 @@ dependencies {
 
 	// Test Containers
 	testImplementation "org.testcontainers:testcontainers:1.18.3"
-
-	// Spring Actuator
-	implementation 'org.springframework.boot:spring-boot-starter-actuator'
-	implementation 'io.micrometer:micrometer-registry-prometheus'
 }
 
 tasks.named('test') {
