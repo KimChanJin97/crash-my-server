@@ -23,7 +23,8 @@ public class TokenBlackListInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         String claims = AuthenticationExtractor.extractAccessToken(request).get();
         Long memberId = jwtProvider.extractId(claims);
-        if (claims != null && tokenService.existsAccessToken(String.valueOf(memberId))) {
+        boolean isBlackListed = tokenService.existsAccessTokenByMemberId(memberId);
+        if (claims != null && isBlackListed) {
             throw new TokenException(BLACKLISTED_ACCESS_TOKEN);
         }
         return true;

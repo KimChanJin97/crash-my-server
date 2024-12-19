@@ -22,12 +22,12 @@ public class TokenService {
         return refreshTokenRepository.save(refreshToken);
     }
 
-    public RefreshToken findRefreshToken(String memberId) {
+    public RefreshToken findRefreshTokenMemberId(Long memberId) {
         return refreshTokenRepository.findById(memberId)
                 .orElseThrow(() -> new TokenException(NO_REFRESH_TOKEN));
     }
 
-    public void deleteRefreshToken(String memberId) {
+    public void deleteRefreshToken(Long memberId) {
         refreshTokenRepository.deleteById(memberId);
     }
 
@@ -35,7 +35,7 @@ public class TokenService {
         return accessTokenRepository.save(accessToken);
     }
 
-    public boolean existsAccessToken(String memberId) {
+    public boolean existsAccessTokenByMemberId(Long memberId) {
         return accessTokenRepository.existsById(memberId);
     }
 }
