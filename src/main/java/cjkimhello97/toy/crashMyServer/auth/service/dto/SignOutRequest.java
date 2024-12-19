@@ -4,10 +4,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 
 @Builder
-@Schema(title = "[ HTTP ] SignUpRequest : 회원가입 요청 DTO")
-public record SignUpRequest(
-        String nickname,
-        String password
+@Schema(title = "[ HTTP ] SignOutRequest : 로그아웃 요청 DTO")
+public record SignOutRequest(
+        String claims
 ) {
-
 }
