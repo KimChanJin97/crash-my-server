@@ -1,9 +1,11 @@
 package cjkimhello97.toy.crashMyServer.auth.interceptor;
 
 import static cjkimhello97.toy.crashMyServer.redis.exception.TokenExceptionInfo.BLACKLISTED_ACCESS_TOKEN;
+import static cjkimhello97.toy.crashMyServer.redis.exception.TokenExceptionInfo.DIFFERENT_ACCESS_TOKENS;
 
 import cjkimhello97.toy.crashMyServer.auth.infrastructure.JwtProvider;
 import cjkimhello97.toy.crashMyServer.auth.support.AuthenticationExtractor;
+import cjkimhello97.toy.crashMyServer.redis.domain.AccessToken;
 import cjkimhello97.toy.crashMyServer.redis.exception.TokenException;
 import cjkimhello97.toy.crashMyServer.redis.service.TokenService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -23,7 +25,8 @@ public class TokenBlackListInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         String claims = AuthenticationExtractor.extractAccessToken(request).get();
         Long memberId = jwtProvider.extractId(claims);
-        if (claims != null && tokenService.existsAccessToken(String.valueOf(memberId))) {
+        boolean isBlackListed = tokenService.existsAccessTokenByMemberId(memberId);
+        if (claims != null && isBlackListed) {
             throw new TokenException(BLACKLISTED_ACCESS_TOKEN);
         }
         return true;

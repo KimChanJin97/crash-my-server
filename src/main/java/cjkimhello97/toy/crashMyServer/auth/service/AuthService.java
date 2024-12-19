@@ -48,7 +48,6 @@ public class AuthService {
         // 닉네임 존재 O = 로그인 로직
         Optional<Member> optionalMember = memberRepository.findByNickname(nickname);
         if (optionalMember.isPresent()) {
-            System.out.println("로그인 호출");
             return signIn(optionalMember.get(), password);
         }
 
@@ -74,7 +73,6 @@ public class AuthService {
         }
         // 닉네임 존재 O && 비밀번호 존재 O = 로그인
         AccessToken accessToken = jwtProvider.issueAccessToken(savedMember.getMemberId());
-        System.out.println("리프레시 토큰 생성 및 저장");
         RefreshToken refreshToken = jwtProvider.issueRefreshToken(savedMember.getMemberId());
         return new SignInResponse(accessToken, refreshToken);
     }
@@ -82,7 +80,7 @@ public class AuthService {
     @Transactional
     public TokenResponse reissueTokens(Long memberId, ReissueRequest reissueRequest) {
         RefreshToken refreshToken = reissueRequest.refreshToken();
-        RefreshToken storedRefreshToken = tokenService.findRefreshToken(String.valueOf(memberId));
+        RefreshToken storedRefreshToken = tokenService.findRefreshTokenMemberId(memberId);
 
         if (!storedRefreshToken.equals(refreshToken)) {
             throw new AuthException(INVALID_TOKEN);
@@ -99,7 +97,7 @@ public class AuthService {
     public SignOutResponse signOut(Long memberId, SignOutRequest request) {
         String claims = request.claims();
 
-        tokenService.deleteRefreshToken(String.valueOf(memberId));
+        tokenService.deleteRefreshToken(memberId);
         AccessToken accessToken = AccessToken.builder()
                 .memberId(memberId)
                 .claims(claims)
