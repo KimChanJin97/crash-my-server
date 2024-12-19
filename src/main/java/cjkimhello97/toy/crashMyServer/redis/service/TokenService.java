@@ -19,8 +19,7 @@ public class TokenService {
     private final AccessTokenRepository accessTokenRepository;
 
     public RefreshToken saveRefreshToken(RefreshToken refreshToken) {
-        refreshTokenRepository.save(refreshToken);
-        return findRefreshToken(refreshToken.getMemberId());
+        return refreshTokenRepository.save(refreshToken);
     }
 
     public RefreshToken findRefreshToken(String memberId) {
@@ -33,13 +32,7 @@ public class TokenService {
     }
 
     public AccessToken saveAccessToken(AccessToken accessToken) {
-        accessTokenRepository.save(accessToken);
-        return findAccessToken(accessToken.getMemberId());
-    }
-
-    public AccessToken findAccessToken(String memberId) {
-        return accessTokenRepository.findById(memberId)
-                .orElseThrow(() -> new TokenException(NO_ACCESS_TOKEN));
+        return accessTokenRepository.save(accessToken);
     }
 
     public boolean existsAccessToken(String memberId) {
