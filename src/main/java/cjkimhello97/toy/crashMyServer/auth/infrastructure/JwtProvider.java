@@ -50,7 +50,7 @@ public class JwtProvider {
         Claims claims = Jwts.claims();
         claims.put("memberId", memberId);
         return AccessToken.builder()
-                .memberId(String.valueOf(memberId))
+                .memberId(memberId)
                 .claims(claimsForAccessToken(claims))
                 .build();
     }
@@ -59,7 +59,7 @@ public class JwtProvider {
         Claims claims = Jwts.claims();
         claims.put("memberId", memberId);
         RefreshToken refreshToken = RefreshToken.builder()
-                .memberId(String.valueOf(memberId))
+                .memberId(memberId)
                 .claims(claimsForRefreshToken(claims))
                 .build();
         return tokenService.saveRefreshToken(refreshToken);

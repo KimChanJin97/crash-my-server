@@ -13,13 +13,13 @@ import org.springframework.data.redis.core.index.Indexed;
 public class AccessToken {
 
     @Id
-    private String memberId;
+    private Long memberId;
 
     @Indexed
     private String claims;
 
     @Builder
-    public AccessToken(String memberId, String claims) {
+    public AccessToken(Long memberId, String claims) {
         this.memberId = memberId;
         this.claims = claims;
     }

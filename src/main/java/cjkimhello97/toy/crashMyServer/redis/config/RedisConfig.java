@@ -31,8 +31,8 @@ public class RedisConfig {
     }
 
     @Bean
-    public RedisTemplate<String, RefreshToken> refreshTokenRedisTemplate(RedisConnectionFactory connectionFactory) {
-        RedisTemplate<String, RefreshToken> refreshTokenRedisTemplate = new RedisTemplate<>();
+    public RedisTemplate<Long, RefreshToken> refreshTokenRedisTemplate(RedisConnectionFactory connectionFactory) {
+        RedisTemplate<Long, RefreshToken> refreshTokenRedisTemplate = new RedisTemplate<>();
         refreshTokenRedisTemplate.setConnectionFactory(connectionFactory);
 
         refreshTokenRedisTemplate.setKeySerializer(new StringRedisSerializer()); // memberId
@@ -44,8 +44,8 @@ public class RedisConfig {
     }
 
     @Bean
-    public RedisTemplate<String, AccessToken> accessTokenRedisTemplate(RedisConnectionFactory connectionFactory) {
-        RedisTemplate<String, AccessToken> accessTokenRedisTemplate = new RedisTemplate<>();
+    public RedisTemplate<Long, AccessToken> accessTokenRedisTemplate(RedisConnectionFactory connectionFactory) {
+        RedisTemplate<Long, AccessToken> accessTokenRedisTemplate = new RedisTemplate<>();
         accessTokenRedisTemplate.setConnectionFactory(connectionFactory);
 
         accessTokenRedisTemplate.setKeySerializer(new StringRedisSerializer()); // memberId

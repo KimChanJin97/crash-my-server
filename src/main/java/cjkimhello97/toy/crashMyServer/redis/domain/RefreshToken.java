@@ -13,13 +13,13 @@ import org.springframework.data.redis.core.index.Indexed;
 public class RefreshToken {
 
     @Id
-    private String memberId;
+    private Long memberId;
 
     @Indexed
     private String claims;
 
     @Builder
-    public RefreshToken(String memberId, String claims) {
+    public RefreshToken(Long memberId, String claims) {
         this.memberId = memberId;
         this.claims = claims;
     }
