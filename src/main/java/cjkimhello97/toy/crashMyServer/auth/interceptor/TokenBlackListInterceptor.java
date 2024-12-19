@@ -1,7 +1,11 @@
 package cjkimhello97.toy.crashMyServer.auth.interceptor;
 
-import cjkimhello97.toy.crashMyServer.auth.service.RedisTokenService;
+import static cjkimhello97.toy.crashMyServer.redis.exception.TokenExceptionInfo.BLACKLISTED_ACCESS_TOKEN;
+
+import cjkimhello97.toy.crashMyServer.auth.infrastructure.JwtProvider;
 import cjkimhello97.toy.crashMyServer.auth.support.AuthenticationExtractor;
+import cjkimhello97.toy.crashMyServer.redis.exception.TokenException;
+import cjkimhello97.toy.crashMyServer.redis.service.TokenService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -12,13 +16,15 @@ import org.springframework.web.servlet.HandlerInterceptor;
 @Component
 public class TokenBlackListInterceptor implements HandlerInterceptor {
 
-    private final RedisTokenService redisTokenService;
+    private final JwtProvider jwtProvider;
+    private final TokenService tokenService;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
-        String accessToken = AuthenticationExtractor.extractAccessToken(request).get();
-        if (accessToken != null) { // 액세스 토큰이 들어있다면
-            return redisTokenService.isKeyOfAccessTokenInBlackList(accessToken); // 블랙리스트에 등록되었는지 확인
+        String claims = AuthenticationExtractor.extractAccessToken(request).get();
+        Long memberId = jwtProvider.extractId(claims);
+        if (claims != null && tokenService.existsAccessToken(String.valueOf(memberId))) {
+            throw new TokenException(BLACKLISTED_ACCESS_TOKEN);
         }
         return true;
     }

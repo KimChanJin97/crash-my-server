@@ -5,7 +5,8 @@ import cjkimhello97.toy.crashMyServer.auth.controller.dto.SignOutResponse;
 import cjkimhello97.toy.crashMyServer.auth.controller.dto.TokenResponse;
 import cjkimhello97.toy.crashMyServer.auth.service.AuthService;
 import cjkimhello97.toy.crashMyServer.auth.service.dto.ReissueRequest;
-import cjkimhello97.toy.crashMyServer.auth.service.dto.SignupRequest;
+import cjkimhello97.toy.crashMyServer.auth.service.dto.SignOutRequest;
+import cjkimhello97.toy.crashMyServer.auth.service.dto.SignUpRequest;
 import cjkimhello97.toy.crashMyServer.auth.support.AuthMember;
 import cjkimhello97.toy.crashMyServer.common.exception.dto.ExceptionResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -17,6 +18,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -59,7 +61,7 @@ public class AuthController {
                     content = {@Content(schema = @Schema(implementation = ExceptionResponse.class))})
     })
     public ResponseEntity<SignInResponse> signUp(
-            @RequestBody SignupRequest signUpRequest
+            @RequestBody SignUpRequest signUpRequest
     ) {
         return ResponseEntity.ok(authService.signUp(signUpRequest));
     }
@@ -130,9 +132,9 @@ public class AuthController {
                     content = {@Content(schema = @Schema(implementation = ExceptionResponse.class))})
     })
     public ResponseEntity<SignOutResponse> signOut(
-            HttpServletRequest request,
-            @AuthMember Long memberId
+            @AuthMember Long memberId,
+            @RequestBody SignOutRequest request
     ) {
-        return ResponseEntity.ok(authService.signOut(request, memberId));
+        return ResponseEntity.ok(authService.signOut(memberId, request));
     }
 }

@@ -1,11 +1,13 @@
 package cjkimhello97.toy.crashMyServer.auth.controller.dto;
 
+import cjkimhello97.toy.crashMyServer.redis.domain.AccessToken;
+import cjkimhello97.toy.crashMyServer.redis.domain.RefreshToken;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-@Schema(title = "[ HTTP ] SigninResponse : 로그인 응답 DTO")
+@Schema(title = "[ HTTP ] SignInResponse : 로그인 응답 DTO")
 public record SignInResponse(
-        String accessToken,
-        String refreshToken
+        AccessToken accessToken,
+        RefreshToken refreshToken
 ) {
 
 }

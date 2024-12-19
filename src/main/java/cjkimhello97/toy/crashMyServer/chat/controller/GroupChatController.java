@@ -41,6 +41,7 @@ public class GroupChatController {
             @RequestBody GroupChatRoomNameRequest groupChatRoomNameRequest
     ) {
         String chatRoomName = groupChatRoomNameRequest.chatRoomName();
+        System.out.println("컨트롤러 호출");
         return ResponseEntity.ok(groupChatService.createGroupChatRoom(senderId, chatRoomName));
     }
 
