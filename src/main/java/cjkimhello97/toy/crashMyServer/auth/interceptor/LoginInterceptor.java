@@ -18,16 +18,14 @@ public class LoginInterceptor implements HandlerInterceptor {
 
     private final JwtProvider jwtProvider;
     private final AuthenticationContext authenticationContext;
-    private final TokenReissueInterceptor tokenReissueInterceptor;
+    private final TokenBlackListInterceptor tokenBlackListInterceptor;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         String accessToken = AuthenticationExtractor.extractAccessToken(request)
                 .orElseThrow(() -> new AuthException(UNAUTHORIZED));
-
         Long memberId = jwtProvider.extractId(accessToken);
         authenticationContext.setAuthentication(memberId);
-
-        return tokenReissueInterceptor.preHandle(request, response, handler);
+        return tokenBlackListInterceptor.preHandle(request, response, handler);
     }
 }
