@@ -1,25 +1,28 @@
 package cjkimhello97.toy.crashMyServer.auth.infrastructure;
 
 import static cjkimhello97.toy.crashMyServer.auth.exception.AuthExceptionType.EXPIRED_TOKEN;
+import static cjkimhello97.toy.crashMyServer.auth.exception.AuthExceptionType.ILLEGAL_ARGUMENT;
 import static cjkimhello97.toy.crashMyServer.auth.exception.AuthExceptionType.INVALID_SIGNATURE;
 import static cjkimhello97.toy.crashMyServer.auth.exception.AuthExceptionType.INVALID_TOKEN;
 import static cjkimhello97.toy.crashMyServer.auth.exception.AuthExceptionType.MALFORMED_TOKEN;
 
 import cjkimhello97.toy.crashMyServer.auth.exception.AuthException;
-import cjkimhello97.toy.crashMyServer.auth.service.RedisTokenService;
+import cjkimhello97.toy.crashMyServer.redis.domain.AccessToken;
+import cjkimhello97.toy.crashMyServer.redis.domain.RefreshToken;
+import cjkimhello97.toy.crashMyServer.redis.service.TokenService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.UnsupportedJwtException;
-import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SecurityException;
 import jakarta.annotation.PostConstruct;
 import java.security.Key;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
-import javax.crypto.SecretKey;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -30,38 +33,53 @@ public class JwtProvider {
 
     @Value("${jwt.secret}")
     private String secret;
-    @Value("${jwt.accessExpiration}")
-    private int accessExpiration;
-    @Value("${jwt.refreshExpiration}")
-    private int refreshExpiration;
+    @Value("${jwt.access-token-expiration}")
+    private long accessTokenExpiration;
+    @Value("${jwt.refresh-token-expiration}")
+    private long refreshTokenExpiration;
     private Key key;
 
-    private final RedisTokenService redisTokenService;
+    private final TokenService tokenService;
 
     @PostConstruct
     private void init() {
         key = Keys.hmacShaKeyFor(secret.getBytes());
     }
 
-    public String createAccessToken(Long id) {
-        return createToken(id, accessExpiration);
-    }
-
-    public String createRefreshToken(Long id) {
-        String refreshToken = createToken(id, refreshExpiration);
-        redisTokenService.setRefreshToken(id, refreshToken);
-        return refreshToken;
-    }
-
-    private String createToken(Long id, int expiration) {
-        Claims claims = Jwts.claims()
-                .id(id.toString())
-                .issuedAt(issuedAt())
-                .expiration(expiredAt(expiration))
+    public AccessToken issueAccessToken(Long memberId) {
+        Claims claims = Jwts.claims();
+        claims.put("memberId", memberId);
+        return AccessToken.builder()
+                .memberId(String.valueOf(memberId))
+                .claims(claimsForAccessToken(claims))
                 .build();
+    }
+
+    public RefreshToken issueRefreshToken(Long memberId) {
+        Claims claims = Jwts.claims();
+        claims.put("memberId", memberId);
+        RefreshToken refreshToken = RefreshToken.builder()
+                .memberId(String.valueOf(memberId))
+                .claims(claimsForRefreshToken(claims))
+                .build();
+        return tokenService.saveRefreshToken(refreshToken);
+    }
+
+    private String claimsForAccessToken(Claims claims) {
         return Jwts.builder()
-                .claims(claims)
-                .signWith(key)
+                .setClaims(claims)
+                .setIssuedAt(issuedAt())
+                .setExpiration(accessTokenExpiration())
+                .signWith(key, SignatureAlgorithm.HS256)
+                .compact();
+    }
+
+    private String claimsForRefreshToken(Claims claims) {
+        return Jwts.builder()
+                .setClaims(claims)
+                .setIssuedAt(issuedAt())
+                .setExpiration(refreshTokenExpiration())
+                .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
     }
 
@@ -70,51 +88,40 @@ public class JwtProvider {
         return Date.from(now.atZone(ZoneId.systemDefault()).toInstant());
     }
 
-    private Date expiredAt(int expiration) {
+    private Date accessTokenExpiration() {
         LocalDateTime now = LocalDateTime.now();
-        return Date.from(now.plusHours(expiration).atZone(ZoneId.systemDefault()).toInstant());
+        return Date.from(now
+                .plusSeconds(accessTokenExpiration)
+                .atZone(ZoneId.systemDefault())
+                .toInstant());
     }
 
-    public Long extractId(String token) {
+    private Date refreshTokenExpiration() {
+        LocalDateTime now = LocalDateTime.now();
+        return Date.from(now
+                .plusSeconds(refreshTokenExpiration)
+                .atZone(ZoneId.systemDefault())
+                .toInstant());
+    }
+
+    public Long extractId(String claim) {
         try {
-            Claims claims = extractClaims(token); // 80번째 줄
-            return Long.parseLong(claims.getId());
+            Claims claims = Jwts.parserBuilder()
+                    .setSigningKey(secret.getBytes())
+                    .build()
+                    .parseClaimsJws(claim)
+                    .getBody();
+            return claims.get("memberId", Long.class);
         } catch (ExpiredJwtException e) {
             throw new AuthException(EXPIRED_TOKEN);
         } catch (SecurityException e) {
             throw new AuthException(INVALID_SIGNATURE);
         } catch (MalformedJwtException e) {
             throw new AuthException(MALFORMED_TOKEN);
-        } catch (UnsupportedJwtException | IllegalArgumentException e) {
+        } catch (UnsupportedJwtException e) {
             throw new AuthException(INVALID_TOKEN);
+        } catch (IllegalArgumentException e) {
+            throw new AuthException(ILLEGAL_ARGUMENT);
         }
-    }
-
-    public Long extractIdWithoutExpiration(String token) {
-        try {
-            Claims claims = extractClaims(token);
-            return Long.parseLong(claims.getId());
-        } catch (ExpiredJwtException e) {
-            Claims expiredClaims = e.getClaims();
-            return Long.parseLong(expiredClaims.getId());
-        } catch (SecurityException e) {
-            throw new AuthException(INVALID_SIGNATURE);
-        } catch (MalformedJwtException e) {
-            throw new AuthException(MALFORMED_TOKEN);
-        } catch (UnsupportedJwtException | IllegalArgumentException e) {
-            throw new AuthException(INVALID_TOKEN);
-        }
-    }
-
-    private SecretKey getSigningKey() {
-        return Keys.hmacShaKeyFor(this.secret.getBytes());
-    }
-
-    private Claims extractClaims(String token) {
-        return Jwts.parser()
-                .verifyWith(this.getSigningKey())
-                .build()
-                .parseSignedClaims(token) // 118번째
-                .getPayload();
     }
 }
