@@ -101,7 +101,7 @@ public class AuthService {
 
         tokenService.deleteRefreshToken(String.valueOf(memberId));
         AccessToken accessToken = AccessToken.builder()
-                .memberId(String.valueOf(memberId))
+                .memberId(memberId)
                 .claims(claims)
                 .build();
         tokenService.saveAccessToken(accessToken);
