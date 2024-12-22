@@ -17,9 +17,9 @@ import cjkimhello97.toy.crashMyServer.click.domain.Click;
 import cjkimhello97.toy.crashMyServer.click.repository.ClickRepository;
 import cjkimhello97.toy.crashMyServer.member.domain.Member;
 import cjkimhello97.toy.crashMyServer.member.repository.MemberRepository;
-import cjkimhello97.toy.crashMyServer.redis.domain.AccessToken;
-import cjkimhello97.toy.crashMyServer.redis.domain.RefreshToken;
-import cjkimhello97.toy.crashMyServer.redis.service.TokenService;
+import cjkimhello97.toy.crashMyServer.token.domain.AccessToken;
+import cjkimhello97.toy.crashMyServer.token.domain.RefreshToken;
+import cjkimhello97.toy.crashMyServer.token.service.TokenService;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -80,7 +80,7 @@ public class AuthService {
     @Transactional
     public TokenResponse reissueTokens(Long memberId, ReissueRequest reissueRequest) {
         RefreshToken refreshToken = reissueRequest.refreshToken();
-        RefreshToken storedRefreshToken = tokenService.findRefreshTokenMemberId(memberId);
+        RefreshToken storedRefreshToken = tokenService.getRefreshTokenByMemberId(memberId);
 
         if (!storedRefreshToken.equals(refreshToken)) {
             throw new AuthException(INVALID_TOKEN);
@@ -97,7 +97,7 @@ public class AuthService {
     public SignOutResponse signOut(Long memberId, SignOutRequest request) {
         String claims = request.claims();
 
-        tokenService.deleteRefreshToken(memberId);
+        tokenService.deleteRefreshTokenByMemberId(memberId);
         AccessToken accessToken = AccessToken.builder()
                 .memberId(memberId)
                 .claims(claims)

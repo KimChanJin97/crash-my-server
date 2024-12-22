@@ -1,12 +1,12 @@
-package cjkimhello97.toy.crashMyServer.redis.service;
+package cjkimhello97.toy.crashMyServer.token.service;
 
-import static cjkimhello97.toy.crashMyServer.redis.exception.TokenExceptionInfo.NO_REFRESH_TOKEN;
+import static cjkimhello97.toy.crashMyServer.token.exception.TokenExceptionInfo.NO_REFRESH_TOKEN;
 
-import cjkimhello97.toy.crashMyServer.redis.domain.AccessToken;
-import cjkimhello97.toy.crashMyServer.redis.domain.RefreshToken;
-import cjkimhello97.toy.crashMyServer.redis.exception.TokenException;
-import cjkimhello97.toy.crashMyServer.redis.repository.AccessTokenRepository;
-import cjkimhello97.toy.crashMyServer.redis.repository.RefreshTokenRepository;
+import cjkimhello97.toy.crashMyServer.token.domain.AccessToken;
+import cjkimhello97.toy.crashMyServer.token.domain.RefreshToken;
+import cjkimhello97.toy.crashMyServer.token.exception.TokenException;
+import cjkimhello97.toy.crashMyServer.token.repository.AccessTokenRepository;
+import cjkimhello97.toy.crashMyServer.token.repository.RefreshTokenRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

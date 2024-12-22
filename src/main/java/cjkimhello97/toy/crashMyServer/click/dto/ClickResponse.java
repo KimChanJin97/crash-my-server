@@ -1,4 +1,4 @@
-package cjkimhello97.toy.crashMyServer.click.controller.dto;
+package cjkimhello97.toy.crashMyServer.click.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.Map;

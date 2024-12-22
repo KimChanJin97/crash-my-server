@@ -7,9 +7,9 @@ import static cjkimhello97.toy.crashMyServer.auth.exception.AuthExceptionType.IN
 import static cjkimhello97.toy.crashMyServer.auth.exception.AuthExceptionType.MALFORMED_TOKEN;
 
 import cjkimhello97.toy.crashMyServer.auth.exception.AuthException;
-import cjkimhello97.toy.crashMyServer.redis.domain.AccessToken;
-import cjkimhello97.toy.crashMyServer.redis.domain.RefreshToken;
-import cjkimhello97.toy.crashMyServer.redis.service.TokenService;
+import cjkimhello97.toy.crashMyServer.token.domain.AccessToken;
+import cjkimhello97.toy.crashMyServer.token.domain.RefreshToken;
+import cjkimhello97.toy.crashMyServer.token.service.TokenService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -23,6 +23,7 @@ import java.security.Key;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -49,6 +50,7 @@ public class JwtProvider {
     public AccessToken issueAccessToken(Long memberId) {
         Claims claims = Jwts.claims();
         claims.put("memberId", memberId);
+        claims.put("uuid", UUID.randomUUID().toString());
         return AccessToken.builder()
                 .memberId(memberId)
                 .claims(claimsForAccessToken(claims))
@@ -58,6 +60,7 @@ public class JwtProvider {
     public RefreshToken issueRefreshToken(Long memberId) {
         Claims claims = Jwts.claims();
         claims.put("memberId", memberId);
+        claims.put("uuid", UUID.randomUUID().toString());
         RefreshToken refreshToken = RefreshToken.builder()
                 .memberId(memberId)
                 .claims(claimsForRefreshToken(claims))

@@ -3,7 +3,7 @@ package cjkimhello97.toy.crashMyServer.click.controller;
 import static cjkimhello97.toy.crashMyServer.click.utils.CountFormatter.format;
 
 import cjkimhello97.toy.crashMyServer.auth.support.AuthMember;
-import cjkimhello97.toy.crashMyServer.click.controller.dto.ClickResponse;
+import cjkimhello97.toy.crashMyServer.click.dto.ClickResponse;
 import cjkimhello97.toy.crashMyServer.click.domain.Click;
 import cjkimhello97.toy.crashMyServer.click.service.ClickService;
 import cjkimhello97.toy.crashMyServer.common.exception.dto.ExceptionResponse;
@@ -63,10 +63,10 @@ public class ClickController {
             description = """
                     # STOMP 응답을 받기 위한 조건
                     ## - 웹소켓 연결 : wss://crash-my-server.site/ws URL을 연결한 상태이어야 합니다.
-                    ## - 웹소켓 구독 1 : /sub/click/{본인 닉네임} URL을 구독한 상태이어야 합니다.
+                    ## - 웹소켓 구독 1 : /sub/click/{memberId} URL을 구독한 상태이어야 합니다.
                     ## - 웹소켓 구독 2 : /sub/click-rank URL을 구독한 상태이어야 합니다.
                     # 주의사항
-                    ## - 웹소켓 구독 1 URL( /sub/click/{본인 닉네임} )을 구독한 본인에게만 STOMP 응답이 옵니다.
+                    ## - 웹소켓 구독 1 URL( /sub/click/{memberId} )을 구독한 본인에게만 STOMP 응답이 옵니다.
                     ## - STOMP 응답 형식 : {"nickname":"aaa","count":"1"}
                     ## - 웹소켓 구독 2 URL( /sub/click-rank )을 구독한 모든 클라이언트들에게 STOMP 응답이 옵니다.
                     ## - STOMP 응답 형식 : {"clickRank":{"aaa":"1","bbb":"2"}} (* 주의. 리스트는 정렬되지 않은 상태로 반환되므로 내림차순 정렬하여 클릭 랭크에 렌더링)
@@ -76,7 +76,7 @@ public class ClickController {
             @ApiResponse(
                     responseCode = "200",
                     description = """
-                            ### 웹소켓 구독 1 URL( /sub/click/{본인 닉네임} )로 도착하는 STOMP 응답 형식 
+                            ### 웹소켓 구독 1 URL( /sub/click/{memberId} )로 도착하는 STOMP 응답 형식 
                             - 응답 형식 : {"nickname":"aaa","count":"1"}
                             ### 웹소켓 구독 2 URL( /sub/click-rank )로 도착하는 STOMP 응답 형식 
                             - 응답 형식 : {"clickRank":{"aaa":"1","bbb":"2"}}

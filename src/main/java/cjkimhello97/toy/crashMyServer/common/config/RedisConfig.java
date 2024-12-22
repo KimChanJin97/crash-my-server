@@ -1,9 +1,9 @@
-package cjkimhello97.toy.crashMyServer.redis.config;
+package cjkimhello97.toy.crashMyServer.common.config;
 
 import static org.springframework.data.redis.core.RedisKeyValueAdapter.EnableKeyspaceEvents.ON_STARTUP;
 
-import cjkimhello97.toy.crashMyServer.redis.domain.AccessToken;
-import cjkimhello97.toy.crashMyServer.redis.domain.RefreshToken;
+import cjkimhello97.toy.crashMyServer.token.domain.AccessToken;
+import cjkimhello97.toy.crashMyServer.token.domain.RefreshToken;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,7 +16,7 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 @Configuration
 @EnableRedisRepositories(
-        basePackages = {"cjkimhello97.toy.crashMyServer.redis.repository"},
+        basePackages = {"cjkimhello97.toy.crashMyServer.token.repository"},
         enableKeyspaceEvents = ON_STARTUP)
 public class RedisConfig {
 

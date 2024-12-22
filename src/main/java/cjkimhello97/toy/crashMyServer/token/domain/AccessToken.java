@@ -1,4 +1,4 @@
-package cjkimhello97.toy.crashMyServer.redis.domain;
+package cjkimhello97.toy.crashMyServer.token.domain;
 
 import java.util.Objects;
 import lombok.Builder;
