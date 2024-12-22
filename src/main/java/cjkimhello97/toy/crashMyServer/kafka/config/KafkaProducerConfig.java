@@ -1,9 +1,9 @@
 package cjkimhello97.toy.crashMyServer.kafka.config;
 
 import cjkimhello97.toy.crashMyServer.kafka.constant.KafkaConstants;
-import cjkimhello97.toy.crashMyServer.kafka.dto.KafkaChatMessageRequest;
-import cjkimhello97.toy.crashMyServer.kafka.dto.KafkaClickRankRequest;
-import cjkimhello97.toy.crashMyServer.kafka.dto.KafkaClickRequest;
+import cjkimhello97.toy.crashMyServer.chat.dto.KafkaChatMessageRequest;
+import cjkimhello97.toy.crashMyServer.click.dto.KafkaClickRankRequest;
+import cjkimhello97.toy.crashMyServer.click.dto.KafkaClickRequest;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -12,12 +12,13 @@ import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.annotation.EnableKafka;
+import org.springframework.kafka.annotation.EnableKafkaRetryTopic;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
 import org.springframework.kafka.support.serializer.JsonSerializer;
 
-@EnableKafka
+@EnableKafkaRetryTopic
 @Configuration
 @RequiredArgsConstructor
 public class KafkaProducerConfig {

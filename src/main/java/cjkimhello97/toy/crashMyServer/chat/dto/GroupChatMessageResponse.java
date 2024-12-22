@@ -1,4 +1,4 @@
-package cjkimhello97.toy.crashMyServer.chat.controller.dto;
+package cjkimhello97.toy.crashMyServer.chat.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
