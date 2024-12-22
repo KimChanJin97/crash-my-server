@@ -8,8 +8,15 @@ import org.springframework.data.mongodb.core.convert.DefaultDbRefResolver;
 import org.springframework.data.mongodb.core.convert.DefaultMongoTypeMapper;
 import org.springframework.data.mongodb.core.convert.MappingMongoConverter;
 import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
+import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
 @Configuration
+@EnableMongoRepositories(
+        basePackages = {
+                "cjkimhello97.toy.crashMyServer.kafka.repository",
+                "cjkimhello97.toy.crashMyServer.chat.repository"
+        }
+)
 public class MongoDBConfig {
 
     @Bean

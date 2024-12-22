@@ -1,4 +1,4 @@
-package cjkimhello97.toy.crashMyServer.redis.exception;
+package cjkimhello97.toy.crashMyServer.token.exception;
 
 import cjkimhello97.toy.crashMyServer.common.exception.support.ExceptionType;
 import cjkimhello97.toy.crashMyServer.common.exception.support.Status;

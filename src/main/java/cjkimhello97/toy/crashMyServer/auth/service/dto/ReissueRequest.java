@@ -1,6 +1,6 @@
 package cjkimhello97.toy.crashMyServer.auth.service.dto;
 
-import cjkimhello97.toy.crashMyServer.redis.domain.RefreshToken;
+import cjkimhello97.toy.crashMyServer.token.domain.RefreshToken;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 

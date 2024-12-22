@@ -1,11 +1,11 @@
 package cjkimhello97.toy.crashMyServer.auth.interceptor;
 
-import static cjkimhello97.toy.crashMyServer.redis.exception.TokenExceptionInfo.BLACKLISTED_ACCESS_TOKEN;
+import static cjkimhello97.toy.crashMyServer.token.exception.TokenExceptionInfo.BLACKLISTED_ACCESS_TOKEN;
 
 import cjkimhello97.toy.crashMyServer.auth.infrastructure.JwtProvider;
 import cjkimhello97.toy.crashMyServer.auth.support.AuthenticationExtractor;
-import cjkimhello97.toy.crashMyServer.redis.exception.TokenException;
-import cjkimhello97.toy.crashMyServer.redis.service.TokenService;
+import cjkimhello97.toy.crashMyServer.token.exception.TokenException;
+import cjkimhello97.toy.crashMyServer.token.service.TokenService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;

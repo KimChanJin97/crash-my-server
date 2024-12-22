@@ -1,4 +1,4 @@
-package cjkimhello97.toy.crashMyServer.kafka.dto;
+package cjkimhello97.toy.crashMyServer.click.dto;
 
 import java.io.Serializable;
 import lombok.AllArgsConstructor;
