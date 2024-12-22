@@ -1,6 +1,5 @@
 package cjkimhello97.toy.crashMyServer.redis.service;
 
-import static cjkimhello97.toy.crashMyServer.redis.exception.TokenExceptionInfo.NO_ACCESS_TOKEN;
 import static cjkimhello97.toy.crashMyServer.redis.exception.TokenExceptionInfo.NO_REFRESH_TOKEN;
 
 import cjkimhello97.toy.crashMyServer.redis.domain.AccessToken;
@@ -22,13 +21,17 @@ public class TokenService {
         return refreshTokenRepository.save(refreshToken);
     }
 
-    public RefreshToken findRefreshTokenMemberId(Long memberId) {
+    public RefreshToken getRefreshTokenByMemberId(Long memberId) {
         return refreshTokenRepository.findById(memberId)
                 .orElseThrow(() -> new TokenException(NO_REFRESH_TOKEN));
     }
 
-    public void deleteRefreshToken(Long memberId) {
+    public void deleteRefreshTokenByMemberId(Long memberId) {
         refreshTokenRepository.deleteById(memberId);
+    }
+
+    public void deleteAllRefreshTokens() {
+        refreshTokenRepository.deleteAll();
     }
 
     public AccessToken saveAccessToken(AccessToken accessToken) {

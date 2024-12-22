@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class KafkaConstants {
 
-    @Value("${kafka.broker}")
+    @Value("${spring.kafka.bootstrap-servers}")
     public String KAFKA_BROKER;
 
     @Bean

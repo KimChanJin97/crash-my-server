@@ -1,8 +1,8 @@
 package cjkimhello97.toy.crashMyServer.chat.controller;
 
 import cjkimhello97.toy.crashMyServer.auth.support.AuthMember;
-import cjkimhello97.toy.crashMyServer.chat.controller.dto.GroupChatMessageResponses;
-import cjkimhello97.toy.crashMyServer.chat.controller.dto.GroupChatRoomResponse;
+import cjkimhello97.toy.crashMyServer.chat.dto.GroupChatMessageResponses;
+import cjkimhello97.toy.crashMyServer.chat.dto.GroupChatRoomResponse;
 import cjkimhello97.toy.crashMyServer.chat.service.GroupChatService;
 import cjkimhello97.toy.crashMyServer.chat.service.dto.GroupChatMessageRequest;
 import cjkimhello97.toy.crashMyServer.chat.service.dto.GroupChatRoomNameRequest;
@@ -41,7 +41,6 @@ public class GroupChatController {
             @RequestBody GroupChatRoomNameRequest groupChatRoomNameRequest
     ) {
         String chatRoomName = groupChatRoomNameRequest.chatRoomName();
-        System.out.println("컨트롤러 호출");
         return ResponseEntity.ok(groupChatService.createGroupChatRoom(senderId, chatRoomName));
     }
 

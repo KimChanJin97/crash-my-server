@@ -1,27 +1,26 @@
 package cjkimhello97.toy.crashMyServer.chat.service;
 
-import static cjkimhello97.toy.crashMyServer.chat.exception.ChatExceptionType.ALREADY_ENTER_CHAT_ROOM;
 import static cjkimhello97.toy.crashMyServer.chat.exception.ChatExceptionType.ALREADY_LEFT_CHAT_ROOM;
 import static cjkimhello97.toy.crashMyServer.chat.exception.ChatExceptionType.CHAT_ROOM_NOT_FOUND;
 import static cjkimhello97.toy.crashMyServer.chat.utils.GroupChatMessageUtils.enterGroupChatRoomMessage;
 import static cjkimhello97.toy.crashMyServer.chat.utils.GroupChatMessageUtils.leaveGroupChatRoomMessage;
 
-import cjkimhello97.toy.crashMyServer.chat.controller.dto.ChatMessageResponse;
-import cjkimhello97.toy.crashMyServer.chat.controller.dto.GroupChatMessageResponse;
-import cjkimhello97.toy.crashMyServer.chat.controller.dto.GroupChatMessageResponses;
-import cjkimhello97.toy.crashMyServer.chat.controller.dto.GroupChatRoomResponse;
 import cjkimhello97.toy.crashMyServer.chat.domain.ChatMessage;
 import cjkimhello97.toy.crashMyServer.chat.domain.ChatRoom;
 import cjkimhello97.toy.crashMyServer.chat.domain.MemberChatRoom;
+import cjkimhello97.toy.crashMyServer.chat.dto.ChatMessageResponse;
+import cjkimhello97.toy.crashMyServer.chat.dto.GroupChatMessageResponse;
+import cjkimhello97.toy.crashMyServer.chat.dto.GroupChatMessageResponses;
+import cjkimhello97.toy.crashMyServer.chat.dto.GroupChatRoomResponse;
+import cjkimhello97.toy.crashMyServer.chat.dto.KafkaChatMessageRequest;
 import cjkimhello97.toy.crashMyServer.chat.exception.ChatException;
 import cjkimhello97.toy.crashMyServer.chat.repository.ChatMessageRepository;
 import cjkimhello97.toy.crashMyServer.chat.repository.ChatRoomRepository;
 import cjkimhello97.toy.crashMyServer.chat.repository.MemberChatRoomRepository;
 import cjkimhello97.toy.crashMyServer.chat.service.dto.GroupChatMessageRequest;
-import cjkimhello97.toy.crashMyServer.kafka.dto.KafkaChatMessageRequest;
 import cjkimhello97.toy.crashMyServer.member.domain.Member;
 import cjkimhello97.toy.crashMyServer.member.service.MemberService;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -58,15 +57,14 @@ public class GroupChatService {
     }
 
     @Transactional
-    public void enterGroupChatRoom(Long chatRoomId, Long senderId) {
+    public KafkaChatMessageRequest enterGroupChatRoom(Long chatRoomId, Long senderId) {
         Member sender = memberService.getMemberByMemberId(senderId);
         String senderNickname = sender.getNickname();
         ChatRoom chatRoom = getChatRoomByChatRoomId(chatRoomId);
-
-        validateEnterGroupChatRoom(sender, chatRoom);
-
+        String uuid = String.valueOf(UUID.randomUUID());
+        System.out.println("\n\n\n서비스에서 " + uuid + " 를 가진 메시지 발행\n\n\n");
         KafkaChatMessageRequest kafkaRequest = KafkaChatMessageRequest.builder()
-                .uuid(String.valueOf(UUID.randomUUID()))
+                .uuid(uuid)
                 .chatRoomId(chatRoomId)
                 .senderId(senderId)
                 .senderNickname(senderNickname)
@@ -74,13 +72,15 @@ public class GroupChatService {
                 .build();
         kafkaChatMessageRequestTemplate.send("enter", kafkaRequest);
         sender.addChatRoom(chatRoom);
+        return kafkaRequest;
     }
 
     @Transactional
-    public void saveGroupChatMessage(GroupChatMessageRequest groupChatMessageRequest) {
+    public KafkaChatMessageRequest saveGroupChatMessage(GroupChatMessageRequest groupChatMessageRequest) {
         groupChatMessageRequest.setCreatedAtNow();
         Member member = memberService.getMemberByNickname(groupChatMessageRequest.getSenderNickname());
         KafkaChatMessageRequest kafkaRequest = modelMapper.map(groupChatMessageRequest, KafkaChatMessageRequest.class);
+
         kafkaRequest.setUuid(String.valueOf(UUID.randomUUID()));
         kafkaRequest.setSenderId(member.getMemberId());
         kafkaRequest.setChatRoomId(groupChatMessageRequest.getChatRoomId());
@@ -94,18 +94,19 @@ public class GroupChatService {
                 .createdAt(groupChatMessageRequest.getCreatedAt())
                 .build();
         chatMessageRepository.save(chatMessage);
+        return kafkaRequest;
     }
 
     public Set<GroupChatRoomResponse> getGroupChatRooms(Long senderId) {
         Member sender = memberService.getMemberByMemberId(senderId);
-        Set<GroupChatRoomResponse> groupChatRoomResponses = new HashSet<>();
+        Set<GroupChatRoomResponse> groupChatRoomResponses = new LinkedHashSet<>();
 
         sender.getChatRooms().forEach(chatRoom -> {
             GroupChatRoomResponse groupChatRoomResponse = GroupChatRoomResponse.from(chatRoom);
-            ChatMessageResponse chatMessageResponse = modelMapper
-                    .map(chatMessageRepository.findFirstByChatRoomIdOrderByCreatedAtDesc(chatRoom.getChatRoomId()),
-                            ChatMessageResponse.class
-                    );
+            ChatMessageResponse chatMessageResponse =
+                    modelMapper.map(
+                            chatMessageRepository.findFirstByChatRoomIdOrderByCreatedAtDesc(chatRoom.getChatRoomId()),
+                            ChatMessageResponse.class);
             groupChatRoomResponse.setChatMessageResponse(chatMessageResponse);
             groupChatRoomResponses.add(groupChatRoomResponse);
         });
@@ -151,11 +152,5 @@ public class GroupChatService {
     private MemberChatRoom getMemberChatRoomByMemberIdAndChatRoomId(Long memberId, Long chatRoomId) {
         return memberChatRoomRepository.findByMemberMemberIdAndChatRoomChatRoomId(memberId, chatRoomId)
                 .orElseThrow(() -> new ChatException(ALREADY_LEFT_CHAT_ROOM));
-    }
-
-    private void validateEnterGroupChatRoom(Member sender, ChatRoom chatRoomToEnter) {
-        if (sender.getChatRooms().contains(chatRoomToEnter)) {
-            throw new ChatException(ALREADY_ENTER_CHAT_ROOM);
-        }
     }
 }

@@ -1,6 +1,7 @@
 package cjkimhello97.toy.crashMyServer.chat.domain;
 
 import jakarta.persistence.Id;
+import jakarta.persistence.Transient;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -9,7 +10,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Getter
-@Document(collection = "chatMessage")
+@Document(collection = "chat_message")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ChatMessage {
 
