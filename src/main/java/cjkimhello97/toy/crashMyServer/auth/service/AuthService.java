@@ -1,18 +1,19 @@
 package cjkimhello97.toy.crashMyServer.auth.service;
 
 import static cjkimhello97.toy.crashMyServer.auth.exception.AuthExceptionType.INVALID_TOKEN;
+import static cjkimhello97.toy.crashMyServer.auth.exception.AuthExceptionType.NICKNAME_DUPLICATED;
 import static cjkimhello97.toy.crashMyServer.auth.exception.AuthExceptionType.NICKNAME_TOO_LONG;
 import static cjkimhello97.toy.crashMyServer.auth.exception.AuthExceptionType.WRONG_PASSWORD;
 import static java.lang.Boolean.TRUE;
 
+import cjkimhello97.toy.crashMyServer.auth.controller.dto.ReissueRequest;
 import cjkimhello97.toy.crashMyServer.auth.controller.dto.SignInResponse;
+import cjkimhello97.toy.crashMyServer.auth.controller.dto.SignOutRequest;
 import cjkimhello97.toy.crashMyServer.auth.controller.dto.SignOutResponse;
+import cjkimhello97.toy.crashMyServer.auth.controller.dto.SignUpRequest;
 import cjkimhello97.toy.crashMyServer.auth.controller.dto.TokenResponse;
 import cjkimhello97.toy.crashMyServer.auth.exception.AuthException;
 import cjkimhello97.toy.crashMyServer.auth.infrastructure.JwtProvider;
-import cjkimhello97.toy.crashMyServer.auth.service.dto.ReissueRequest;
-import cjkimhello97.toy.crashMyServer.auth.service.dto.SignOutRequest;
-import cjkimhello97.toy.crashMyServer.auth.service.dto.SignUpRequest;
 import cjkimhello97.toy.crashMyServer.click.domain.Click;
 import cjkimhello97.toy.crashMyServer.click.repository.ClickRepository;
 import cjkimhello97.toy.crashMyServer.member.domain.Member;
@@ -43,7 +44,7 @@ public class AuthService {
         String nickname = signUpRequest.nickname();
         String password = signUpRequest.password();
 
-        validateNickname(nickname);
+        validateNicknameLength(nickname);
 
         // 닉네임 존재 O = 로그인 로직
         Optional<Member> optionalMember = memberRepository.findByNickname(nickname);
@@ -60,7 +61,7 @@ public class AuthService {
 
         Click click = Click.builder()
                 .member(member)
-                .count(Double.valueOf(1))
+                .count(Double.valueOf(0))
                 .build();
         clickRepository.save(click);
         return signIn(member, password);
@@ -107,7 +108,7 @@ public class AuthService {
         return new SignOutResponse(TRUE);
     }
 
-    private void validateNickname(String nickname) {
+    private void validateNicknameLength(String nickname) {
         if (nickname.length() > 20) {
             throw new AuthException(NICKNAME_TOO_LONG);
         }

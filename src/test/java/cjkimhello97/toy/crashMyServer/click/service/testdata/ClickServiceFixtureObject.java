@@ -1,9 +1,9 @@
-package cjkimhello97.toy.crashMyServer.service.click.testdata;
+package cjkimhello97.toy.crashMyServer.click.service.testdata;
 
 import static cjkimhello97.toy.crashMyServer.click.utils.CountFormatter.format;
 
-import cjkimhello97.toy.crashMyServer.kafka.dto.KafkaClickRankRequest;
-import cjkimhello97.toy.crashMyServer.kafka.dto.KafkaClickRequest;
+import cjkimhello97.toy.crashMyServer.click.dto.KafkaClickRankRequest;
+import cjkimhello97.toy.crashMyServer.click.dto.KafkaClickRequest;
 import java.util.Map;
 
 public class ClickServiceFixtureObject {

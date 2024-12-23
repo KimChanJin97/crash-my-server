@@ -22,7 +22,7 @@ public class KafkaEnterListener {
     private final SimpMessagingTemplate messagingTemplate;
     private final ProcessedKafkaRequestRepository processedKafkaRequestRepository;
 
-    @Transactional(noRollbackFor = ProcessedKafkaRequestException.class)
+    @Transactional
     @KafkaListener(
             id = "enterListener0",
             groupId = "enterListener",
@@ -33,26 +33,14 @@ public class KafkaEnterListener {
             KafkaChatMessageRequest request,
             Acknowledgment acknowledgment
     ) {
-        System.out.println("\n\n\n호출\n\n\n");
-
+        System.out.println("\n\n\n\n ===== 호출 ==== \n\n\n\n");
         String uuid = request.getUuid();
-        // 메시지가 이미 처리된 경우 예외 발생
         if (processedKafkaRequestRepository.existsByUuid(uuid)) {
-            System.out.println("\n\n\n" + uuid + " 이미 처리된 적이 있기 때문에 예외 발생\n\n\n");
             throw new ProcessedKafkaRequestException(ALREADY_PROCESSED_MESSAGE);
         }
-
-        // 메시지 처리 로직
-        System.out.println("\n\n\n" + uuid +" 처리한 적 없기 때문에 처리\n\n\n");
         Long chatRoomId = request.getChatRoomId();
-        messagingTemplate.convertAndSend("/sub/enter/" + chatRoomId, request);
-
-        // 처리 완료 기록
-        ProcessedKafkaRequest processedKafkaRequest = new ProcessedKafkaRequest();
-        processedKafkaRequest.setUuid(uuid);
-        ProcessedKafkaRequest save = processedKafkaRequestRepository.save(processedKafkaRequest);
-        System.out.println("\n\n\nsave = " + save.getUuid() + "\n\n\n");
-
-        acknowledgment.acknowledge(); // 커밋
+        messagingTemplate.convertAndSend("/sub/enter" + chatRoomId, request);
+        processedKafkaRequestRepository.save(new ProcessedKafkaRequest(uuid));
+        acknowledgment.acknowledge();
     }
 }
