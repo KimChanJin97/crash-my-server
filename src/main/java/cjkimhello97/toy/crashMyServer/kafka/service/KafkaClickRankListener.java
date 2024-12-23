@@ -33,21 +33,16 @@ public class KafkaClickRankListener {
             KafkaClickRankRequest request,
             Acknowledgment acknowledgment
     ) {
+        // 이미 처리한 적이 있는 메시지라면 예외 발생
         String uuid = request.getUuid();
-        boolean isProcessed = false;
-        try {
-            if (processedKafkaRequestRepository.existsByUuid(uuid)) {
-                throw new ProcessedKafkaRequestException(ALREADY_PROCESSED_MESSAGE);
-            }
-            messagingTemplate.convertAndSend("/sub/click-rank", request);
-            isProcessed = true;
-        } finally {
-            if (isProcessed) {
-                ProcessedKafkaRequest processedKafkaRequest = new ProcessedKafkaRequest();
-                processedKafkaRequest.setUuid(uuid);
-                processedKafkaRequestRepository.save(processedKafkaRequest);
-                acknowledgment.acknowledge();
-            }
+        if (processedKafkaRequestRepository.existsByUuid(uuid)) {
+            throw new ProcessedKafkaRequestException(ALREADY_PROCESSED_MESSAGE);
         }
+        // 메시지 처리(전송)
+        messagingTemplate.convertAndSend("/sub/click-rank", request);
+        // 처리했다면 처리했음을 기록(저장)
+        processedKafkaRequestRepository.save(new ProcessedKafkaRequest(uuid));
+        acknowledgment.acknowledge();
+
     }
 }
