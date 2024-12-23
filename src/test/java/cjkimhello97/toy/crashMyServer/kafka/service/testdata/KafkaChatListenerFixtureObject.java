@@ -55,4 +55,13 @@ public class KafkaChatListenerFixtureObject {
                 .chatRoomId(CHAT_ROOM_ID)
                 .build();
     }
+
+    public static KafkaChatMessageRequest kafkaChatMessageRequest() {
+        return KafkaChatMessageRequest.builder()
+                .uuid(TEST_UUID)
+                .chatRoomId(CHAT_ROOM_ID)
+                .senderId(MEMBER_ID)
+                .senderNickname(NICKNAME)
+                .build();
+    }
 }

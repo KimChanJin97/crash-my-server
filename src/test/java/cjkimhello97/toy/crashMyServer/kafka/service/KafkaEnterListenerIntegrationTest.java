@@ -36,6 +36,7 @@ public class KafkaEnterListenerIntegrationTest extends IntegrationTest {
     private static final Long CHAT_ROOM_ID = 1L;
     private static final Member MEMBER = member();
     private static final ChatRoom CHAT_ROOM = chatRoom();
+    private static final KafkaChatMessageRequest KAFKA_CHAT_MESSAGE_REQUEST = kafkaChatMessageRequest();
 
     @Autowired
     private GroupChatService groupChatService;
