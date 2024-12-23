@@ -48,22 +48,28 @@ public class JwtProvider {
     }
 
     public AccessToken issueAccessToken(Long memberId) {
-        Claims claims = Jwts.claims();
-        claims.put("memberId", memberId);
-        claims.put("uuid", UUID.randomUUID().toString());
+        String claims = Jwts.builder()
+                .claim("memberId", memberId)
+                .claim("uuid", UUID.randomUUID().toString())
+                .issuedAt(issuedAt())
+                .expiration(accessTokenExpiration())
+                .compact();
         return AccessToken.builder()
                 .memberId(memberId)
-                .claims(claimsForAccessToken(claims))
+                .claims(claims)
                 .build();
     }
 
     public RefreshToken issueRefreshToken(Long memberId) {
-        Claims claims = Jwts.claims();
-        claims.put("memberId", memberId);
-        claims.put("uuid", UUID.randomUUID().toString());
+        String claims = Jwts.builder()
+                .claim("memberId", memberId)
+                .claim("uuid", UUID.randomUUID().toString())
+                .issuedAt(issuedAt())
+                .expiration(refreshTokenExpiration())
+                .compact();
         RefreshToken refreshToken = RefreshToken.builder()
                 .memberId(memberId)
-                .claims(claimsForRefreshToken(claims))
+                .claims(claims)
                 .build();
         return tokenService.saveRefreshToken(refreshToken);
     }
@@ -109,7 +115,7 @@ public class JwtProvider {
 
     public Long extractId(String claim) {
         try {
-            Claims claims = Jwts.parserBuilder()
+            Claims claims = Jwts.parser()
                     .setSigningKey(secret.getBytes())
                     .build()
                     .parseClaimsJws(claim)

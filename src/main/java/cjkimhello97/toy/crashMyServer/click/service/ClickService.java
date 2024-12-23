@@ -1,14 +1,12 @@
 package cjkimhello97.toy.crashMyServer.click.service;
 
-import static cjkimhello97.toy.crashMyServer.click.utils.CountFormatter.format;
-
 import cjkimhello97.toy.crashMyServer.click.domain.Click;
 import cjkimhello97.toy.crashMyServer.click.dto.KafkaClickClickRankRequests;
+import cjkimhello97.toy.crashMyServer.click.dto.KafkaClickRankRequest;
+import cjkimhello97.toy.crashMyServer.click.dto.KafkaClickRequest;
 import cjkimhello97.toy.crashMyServer.click.exception.ClickException;
 import cjkimhello97.toy.crashMyServer.click.exception.ClickExceptionType;
 import cjkimhello97.toy.crashMyServer.click.repository.ClickRepository;
-import cjkimhello97.toy.crashMyServer.click.dto.KafkaClickRankRequest;
-import cjkimhello97.toy.crashMyServer.click.dto.KafkaClickRequest;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,7 +33,7 @@ public class ClickService {
         String clickUuid = String.valueOf(UUID.randomUUID());
         KafkaClickRequest kafkaClickRequest = KafkaClickRequest.builder()
                 .uuid(clickUuid)
-                .count(format(click.getCount()))
+                .count(String.valueOf(click.getCount()))
                 .nickname(click.getMember().getNickname())
                 .build();
         kafkaClickRequestKafkaTemplate.send("click", kafkaClickRequest);
@@ -43,7 +41,8 @@ public class ClickService {
         Map<String, String> clickRank = new HashMap<>();
         String clickRankUuid = String.valueOf(UUID.randomUUID());
         List<Click> topTenClicks = getTopTenClicks();
-        topTenClicks.stream().forEach(c -> clickRank.put(c.getMember().getNickname(), format(c.getCount())));
+        topTenClicks.stream()
+                .forEach(c -> clickRank.put(c.getMember().getNickname(), String.valueOf(click.getCount())));
         KafkaClickRankRequest kafkaClickRankRequest = KafkaClickRankRequest.builder()
                 .uuid(clickRankUuid)
                 .clickRank(clickRank)

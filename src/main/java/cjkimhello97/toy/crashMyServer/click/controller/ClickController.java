@@ -1,10 +1,8 @@
 package cjkimhello97.toy.crashMyServer.click.controller;
 
-import static cjkimhello97.toy.crashMyServer.click.utils.CountFormatter.format;
-
 import cjkimhello97.toy.crashMyServer.auth.support.AuthMember;
-import cjkimhello97.toy.crashMyServer.click.dto.ClickResponse;
 import cjkimhello97.toy.crashMyServer.click.domain.Click;
+import cjkimhello97.toy.crashMyServer.click.dto.ClickResponse;
 import cjkimhello97.toy.crashMyServer.click.service.ClickService;
 import cjkimhello97.toy.crashMyServer.common.exception.dto.ExceptionResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -47,10 +45,10 @@ public class ClickController {
 
         Map<String, String> clickRank = new HashMap<>();
         List<Click> topTenClicks = clickService.getTopTenClicks();
-        topTenClicks.stream().forEach(c -> clickRank.put(c.getMember().getNickname(), format(c.getCount())));
+        topTenClicks.stream().forEach(c -> clickRank.put(c.getMember().getNickname(), String.valueOf(c.getCount())));
 
         ClickResponse clickResponse = ClickResponse.builder()
-                .count(format(click.getCount()))
+                .count(String.valueOf(click.getCount()))
                 .clickRank(clickRank)
                 .build();
 

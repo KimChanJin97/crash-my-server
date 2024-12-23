@@ -31,7 +31,7 @@ public class Click implements Comparable<Click> {
     private Long clickId;
 
     @Column(name = "count")
-    private Double count;
+    private Integer count;
 
     @OneToOne(fetch = LAZY)
     @JoinColumn(name = "member_id")
