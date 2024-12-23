@@ -29,7 +29,7 @@ public class KafkaClickRankListener {
             topics = "click-rank",
             containerFactory = "kafkaClickRankRequestConcurrentKafkaListenerContainerFactory"
     )
-    public void listenClickRankTopic1(
+    public void listenClickRankTopic(
             KafkaClickRankRequest request,
             Acknowledgment acknowledgment
     ) {
@@ -37,11 +37,10 @@ public class KafkaClickRankListener {
         boolean isProcessed = false;
         try {
             if (processedKafkaRequestRepository.existsByUuid(uuid)) {
-                messagingTemplate.convertAndSend("/sub/click-rank", request);
-                isProcessed = true;
-            } else {
                 throw new ProcessedKafkaRequestException(ALREADY_PROCESSED_MESSAGE);
             }
+            messagingTemplate.convertAndSend("/sub/click-rank", request);
+            isProcessed = true;
         } finally {
             if (isProcessed) {
                 ProcessedKafkaRequest processedKafkaRequest = new ProcessedKafkaRequest();

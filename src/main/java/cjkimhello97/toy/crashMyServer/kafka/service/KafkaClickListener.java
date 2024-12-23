@@ -36,15 +36,16 @@ public class KafkaClickListener {
         String uuid = request.getUuid();
         boolean isProcessed = false;
         try {
-            if (!processedKafkaRequestRepository.existsByUuid(uuid)) {
-                Long memberId = request.getMemberId();
-                messagingTemplate.convertAndSend("/sub/click/" + memberId, request);
-                isProcessed = true;
-            } else {
+            if (processedKafkaRequestRepository.existsByUuid(uuid)) {
                 throw new ProcessedKafkaRequestException(ALREADY_PROCESSED_MESSAGE);
             }
+            // 메시지 처리 로직
+            Long memberId = request.getMemberId();
+            messagingTemplate.convertAndSend("/sub/click/" + memberId, request);
+            isProcessed = true;
         } finally {
             if (isProcessed) {
+                // 처리되었다면 처리 완료 기록
                 ProcessedKafkaRequest processedKafkaRequest = new ProcessedKafkaRequest();
                 processedKafkaRequest.setUuid(uuid);
                 processedKafkaRequestRepository.save(processedKafkaRequest);

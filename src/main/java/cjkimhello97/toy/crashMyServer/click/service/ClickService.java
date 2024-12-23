@@ -3,6 +3,7 @@ package cjkimhello97.toy.crashMyServer.click.service;
 import static cjkimhello97.toy.crashMyServer.click.utils.CountFormatter.format;
 
 import cjkimhello97.toy.crashMyServer.click.domain.Click;
+import cjkimhello97.toy.crashMyServer.click.dto.KafkaClickClickRankRequests;
 import cjkimhello97.toy.crashMyServer.click.exception.ClickException;
 import cjkimhello97.toy.crashMyServer.click.exception.ClickExceptionType;
 import cjkimhello97.toy.crashMyServer.click.repository.ClickRepository;
@@ -29,25 +30,31 @@ public class ClickService {
     private final ClickRepository clickRepository;
 
     @Transactional
-    public Click click(Long memberId) {
+    public KafkaClickClickRankRequests click(Long memberId) {
         Click click = getClickByMemberId(memberId);
+        String clickUuid = String.valueOf(UUID.randomUUID());
         KafkaClickRequest kafkaClickRequest = KafkaClickRequest.builder()
-                .uuid(String.valueOf(UUID.randomUUID()))
+                .uuid(clickUuid)
                 .count(format(click.getCount()))
                 .nickname(click.getMember().getNickname())
                 .build();
         kafkaClickRequestKafkaTemplate.send("click", kafkaClickRequest);
 
         Map<String, String> clickRank = new HashMap<>();
+        String clickRankUuid = String.valueOf(UUID.randomUUID());
         List<Click> topTenClicks = getTopTenClicks();
         topTenClicks.stream().forEach(c -> clickRank.put(c.getMember().getNickname(), format(c.getCount())));
         KafkaClickRankRequest kafkaClickRankRequest = KafkaClickRankRequest.builder()
-                .uuid(String.valueOf(UUID.randomUUID()))
+                .uuid(clickRankUuid)
                 .clickRank(clickRank)
                 .build();
         kafkaClickRankRequestKafkaTemplate.send("click-rank", kafkaClickRankRequest);
+        click.addCount();
 
-        return click.addCount();
+        return KafkaClickClickRankRequests.builder()
+                .kafkaClickRequest(kafkaClickRequest)
+                .kafkaClickRankRequest(kafkaClickRankRequest)
+                .build();
     }
 
     public List<Click> getTopTenClicks() {

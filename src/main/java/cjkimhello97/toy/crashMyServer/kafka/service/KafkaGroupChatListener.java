@@ -36,13 +36,13 @@ public class KafkaGroupChatListener {
         String uuid = request.getUuid();
         boolean isProcessed = false;
         try {
-            if (processedKafkaRequestRepository.findById(uuid) == null) {
-                Long chatRoomId = request.getChatRoomId();
-                messagingTemplate.convertAndSend("/sub/group-chat/" + chatRoomId, request);
-                isProcessed = true;
-            } else {
+            if (processedKafkaRequestRepository.existsByUuid(uuid)) {
                 throw new ProcessedKafkaRequestException(ALREADY_PROCESSED_MESSAGE);
             }
+            // 메시지 처리 로직
+            Long chatRoomId = request.getChatRoomId();
+            messagingTemplate.convertAndSend("/sub/group-chat/" + chatRoomId, request);
+            isProcessed = true;
         } finally {
             if (isProcessed) {
                 ProcessedKafkaRequest processedKafkaRequest = new ProcessedKafkaRequest();

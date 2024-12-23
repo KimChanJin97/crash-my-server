@@ -16,4 +16,8 @@ public class ProcessedKafkaRequest {
     @MongoId
     private String id;
     private String uuid;
+
+    public ProcessedKafkaRequest(String uuid) {
+        this.uuid = uuid;
+    }
 }

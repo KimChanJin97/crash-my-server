@@ -30,7 +30,7 @@ public class ChatMessage {
     private LocalDateTime createdAt;
 
     @Builder
-    protected ChatMessage(
+    public ChatMessage(
             Long senderId,
             String senderNickname,
             Long receiverId,

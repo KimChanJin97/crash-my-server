@@ -5,6 +5,8 @@ import static cjkimhello97.toy.crashMyServer.chat.exception.ChatExceptionType.CH
 import static cjkimhello97.toy.crashMyServer.chat.utils.GroupChatMessageUtils.enterGroupChatRoomMessage;
 import static cjkimhello97.toy.crashMyServer.chat.utils.GroupChatMessageUtils.leaveGroupChatRoomMessage;
 
+import cjkimhello97.toy.crashMyServer.auth.exception.AuthException;
+import cjkimhello97.toy.crashMyServer.auth.exception.AuthExceptionType;
 import cjkimhello97.toy.crashMyServer.chat.domain.ChatMessage;
 import cjkimhello97.toy.crashMyServer.chat.domain.ChatRoom;
 import cjkimhello97.toy.crashMyServer.chat.domain.MemberChatRoom;
@@ -17,9 +19,9 @@ import cjkimhello97.toy.crashMyServer.chat.exception.ChatException;
 import cjkimhello97.toy.crashMyServer.chat.repository.ChatMessageRepository;
 import cjkimhello97.toy.crashMyServer.chat.repository.ChatRoomRepository;
 import cjkimhello97.toy.crashMyServer.chat.repository.MemberChatRoomRepository;
-import cjkimhello97.toy.crashMyServer.chat.service.dto.GroupChatMessageRequest;
+import cjkimhello97.toy.crashMyServer.chat.dto.GroupChatMessageRequest;
 import cjkimhello97.toy.crashMyServer.member.domain.Member;
-import cjkimhello97.toy.crashMyServer.member.service.MemberService;
+import cjkimhello97.toy.crashMyServer.member.repository.MemberRepository;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -40,13 +42,13 @@ public class GroupChatService {
     private final ChatRoomRepository chatRoomRepository;
     private final ChatMessageRepository chatMessageRepository;
     private final MemberChatRoomRepository memberChatRoomRepository;
-    private final MemberService memberService;
+    private final MemberRepository memberRepository;
     private final ModelMapper modelMapper;
     private final KafkaTemplate<String, KafkaChatMessageRequest> kafkaChatMessageRequestTemplate;
 
     @Transactional
     public Long createGroupChatRoom(Long senderId, String chatRoomName) {
-        Member sender = memberService.getMemberByMemberId(senderId);
+        Member sender = getMemberByMemberId(senderId);
         ChatRoom chatRoom = ChatRoom.builder()
                 .host(sender)
                 .chatRoomName(chatRoomName)
@@ -58,11 +60,10 @@ public class GroupChatService {
 
     @Transactional
     public KafkaChatMessageRequest enterGroupChatRoom(Long chatRoomId, Long senderId) {
-        Member sender = memberService.getMemberByMemberId(senderId);
+        Member sender = getMemberByMemberId(senderId);
         String senderNickname = sender.getNickname();
         ChatRoom chatRoom = getChatRoomByChatRoomId(chatRoomId);
         String uuid = String.valueOf(UUID.randomUUID());
-        System.out.println("\n\n\n서비스에서 " + uuid + " 를 가진 메시지 발행\n\n\n");
         KafkaChatMessageRequest kafkaRequest = KafkaChatMessageRequest.builder()
                 .uuid(uuid)
                 .chatRoomId(chatRoomId)
@@ -78,10 +79,11 @@ public class GroupChatService {
     @Transactional
     public KafkaChatMessageRequest saveGroupChatMessage(GroupChatMessageRequest groupChatMessageRequest) {
         groupChatMessageRequest.setCreatedAtNow();
-        Member member = memberService.getMemberByNickname(groupChatMessageRequest.getSenderNickname());
+        Member member = getMemberByMemberId(groupChatMessageRequest.getSenderId());
         KafkaChatMessageRequest kafkaRequest = modelMapper.map(groupChatMessageRequest, KafkaChatMessageRequest.class);
 
-        kafkaRequest.setUuid(String.valueOf(UUID.randomUUID()));
+        String uuid = String.valueOf(UUID.randomUUID());
+        kafkaRequest.setUuid(uuid);
         kafkaRequest.setSenderId(member.getMemberId());
         kafkaRequest.setChatRoomId(groupChatMessageRequest.getChatRoomId());
         kafkaChatMessageRequestTemplate.send("group-chat", kafkaRequest);
@@ -98,7 +100,7 @@ public class GroupChatService {
     }
 
     public Set<GroupChatRoomResponse> getGroupChatRooms(Long senderId) {
-        Member sender = memberService.getMemberByMemberId(senderId);
+        Member sender = getMemberByMemberId(senderId);
         Set<GroupChatRoomResponse> groupChatRoomResponses = new LinkedHashSet<>();
 
         sender.getChatRooms().forEach(chatRoom -> {
@@ -126,13 +128,14 @@ public class GroupChatService {
     }
 
     @Transactional
-    public void leaveGroupChatRoom(Long chatRoomId, Long senderId) {
+    public KafkaChatMessageRequest leaveGroupChatRoom(Long chatRoomId, Long senderId) {
         getMemberChatRoomByMemberIdAndChatRoomId(senderId, chatRoomId);
 
-        Member sender = memberService.getMemberByMemberId(senderId);
+        String uuid = String.valueOf(UUID.randomUUID());
+        Member sender = getMemberByMemberId(senderId);
         String senderNickname = sender.getNickname();
         KafkaChatMessageRequest kafkaRequest = KafkaChatMessageRequest.builder()
-                .uuid(String.valueOf(UUID.randomUUID()))
+                .uuid(uuid)
                 .chatRoomId(chatRoomId)
                 .senderId(senderId)
                 .senderNickname(sender.getNickname())
@@ -142,6 +145,12 @@ public class GroupChatService {
 
         ChatRoom chatRoom = getChatRoomByChatRoomId(chatRoomId);
         sender.removeChatRoom(chatRoom);
+        return kafkaRequest;
+    }
+
+    private Member getMemberByMemberId(Long memberId) {
+        return memberRepository.findByMemberId(memberId)
+                .orElseThrow(() -> new AuthException(AuthExceptionType.MEMBER_NOT_FOUND));
     }
 
     public ChatRoom getChatRoomByChatRoomId(Long chatRoomId) {
