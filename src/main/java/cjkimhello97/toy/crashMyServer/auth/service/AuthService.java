@@ -1,7 +1,6 @@
 package cjkimhello97.toy.crashMyServer.auth.service;
 
 import static cjkimhello97.toy.crashMyServer.auth.exception.AuthExceptionType.INVALID_TOKEN;
-import static cjkimhello97.toy.crashMyServer.auth.exception.AuthExceptionType.NICKNAME_DUPLICATED;
 import static cjkimhello97.toy.crashMyServer.auth.exception.AuthExceptionType.NICKNAME_TOO_LONG;
 import static cjkimhello97.toy.crashMyServer.auth.exception.AuthExceptionType.WRONG_PASSWORD;
 import static java.lang.Boolean.TRUE;
@@ -61,7 +60,7 @@ public class AuthService {
 
         Click click = Click.builder()
                 .member(member)
-                .count(Double.valueOf(0))
+                .count(0)
                 .build();
         clickRepository.save(click);
         return signIn(member, password);
