@@ -6,9 +6,7 @@ import cjkimhello97.toy.crashMyServer.chat.dto.KafkaChatMessageRequest;
 import cjkimhello97.toy.crashMyServer.click.dto.KafkaClickRankRequest;
 import cjkimhello97.toy.crashMyServer.click.dto.KafkaClickRequest;
 import cjkimhello97.toy.crashMyServer.kafka.constant.KafkaConstants;
-import cjkimhello97.toy.crashMyServer.kafka.domain.ProcessedKafkaRequest;
 import cjkimhello97.toy.crashMyServer.kafka.exception.ProcessedKafkaRequestException;
-import com.amazonaws.retry.v2.SimpleRetryPolicy;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +20,6 @@ import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.listener.DefaultErrorHandler;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
-import org.springframework.retry.support.RetryTemplate;
 import org.springframework.util.backoff.FixedBackOff;
 
 @EnableKafka
@@ -102,9 +99,6 @@ public class KafkaConsumerConfig {
         FixedBackOff fixedBackOff = new FixedBackOff(0L, 0);
         DefaultErrorHandler errorHandler = new DefaultErrorHandler(fixedBackOff);
         errorHandler.addNotRetryableExceptions(ProcessedKafkaRequestException.class);
-        errorHandler.setRetryListeners((record, exception, deliveryAttempt) -> {
-            System.out.println("\n\n\n재시도 : " + deliveryAttempt + " 레코드 : " + record.value() + "\n\n\n");
-        });
         factory.setCommonErrorHandler(errorHandler);
 
         return factory;
