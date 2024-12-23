@@ -1,15 +1,13 @@
 package cjkimhello97.toy.crashMyServer.kafka.service;
 
-import static cjkimhello97.toy.crashMyServer.kafka.service.testdata.KafkaChatListenerFixtureObject.*;
+import static cjkimhello97.toy.crashMyServer.kafka.service.testdata.KafkaChatListenerFixtureObject.chatRoom;
+import static cjkimhello97.toy.crashMyServer.kafka.service.testdata.KafkaChatListenerFixtureObject.member;
 
 import cjkimhello97.toy.crashMyServer.IntegrationTest;
 import cjkimhello97.toy.crashMyServer.chat.domain.ChatRoom;
 import cjkimhello97.toy.crashMyServer.chat.dto.KafkaChatMessageRequest;
 import cjkimhello97.toy.crashMyServer.chat.repository.ChatRoomRepository;
 import cjkimhello97.toy.crashMyServer.chat.service.GroupChatService;
-import cjkimhello97.toy.crashMyServer.kafka.exception.ProcessedKafkaRequestException;
-import cjkimhello97.toy.crashMyServer.kafka.repository.ProcessedKafkaRequestRepository;
-import cjkimhello97.toy.crashMyServer.kafka.service.testdata.KafkaChatListenerFixtureObject;
 import cjkimhello97.toy.crashMyServer.member.domain.Member;
 import cjkimhello97.toy.crashMyServer.member.repository.MemberRepository;
 import java.util.Optional;
@@ -23,7 +21,6 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;

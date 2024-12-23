@@ -10,7 +10,6 @@ import cjkimhello97.toy.crashMyServer.chat.dto.GroupChatMessageRequest;
 import cjkimhello97.toy.crashMyServer.chat.dto.KafkaChatMessageRequest;
 import cjkimhello97.toy.crashMyServer.chat.repository.ChatRoomRepository;
 import cjkimhello97.toy.crashMyServer.chat.service.GroupChatService;
-import cjkimhello97.toy.crashMyServer.kafka.repository.ProcessedKafkaRequestRepository;
 import cjkimhello97.toy.crashMyServer.member.domain.Member;
 import cjkimhello97.toy.crashMyServer.member.repository.MemberRepository;
 import java.util.Optional;

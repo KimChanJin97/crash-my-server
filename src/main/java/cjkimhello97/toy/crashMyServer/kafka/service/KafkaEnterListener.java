@@ -33,13 +33,15 @@ public class KafkaEnterListener {
             KafkaChatMessageRequest request,
             Acknowledgment acknowledgment
     ) {
-        System.out.println("\n\n\n\n ===== 호출 ==== \n\n\n\n");
+        // 이미 처리한 적이 있는 메시지라면 예외 발생
         String uuid = request.getUuid();
         if (processedKafkaRequestRepository.existsByUuid(uuid)) {
             throw new ProcessedKafkaRequestException(ALREADY_PROCESSED_MESSAGE);
         }
+        // 메시지 처리(전송)
         Long chatRoomId = request.getChatRoomId();
         messagingTemplate.convertAndSend("/sub/enter" + chatRoomId, request);
+        // 처리했다면 처리했음을 기록(저장)
         processedKafkaRequestRepository.save(new ProcessedKafkaRequest(uuid));
         acknowledgment.acknowledge();
     }

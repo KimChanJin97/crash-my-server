@@ -1,14 +1,12 @@
 package cjkimhello97.toy.crashMyServer.kafka.service;
 
 import static cjkimhello97.toy.crashMyServer.kafka.service.testdata.KafkaChatListenerFixtureObject.chatRoom;
-import static cjkimhello97.toy.crashMyServer.kafka.service.testdata.KafkaChatListenerFixtureObject.groupChatMessageRequest;
 import static cjkimhello97.toy.crashMyServer.kafka.service.testdata.KafkaChatListenerFixtureObject.member;
 import static cjkimhello97.toy.crashMyServer.kafka.service.testdata.KafkaChatListenerFixtureObject.memberChatRoom;
 
 import cjkimhello97.toy.crashMyServer.IntegrationTest;
 import cjkimhello97.toy.crashMyServer.chat.domain.ChatRoom;
 import cjkimhello97.toy.crashMyServer.chat.domain.MemberChatRoom;
-import cjkimhello97.toy.crashMyServer.chat.dto.GroupChatMessageRequest;
 import cjkimhello97.toy.crashMyServer.chat.dto.KafkaChatMessageRequest;
 import cjkimhello97.toy.crashMyServer.chat.repository.ChatRoomRepository;
 import cjkimhello97.toy.crashMyServer.chat.repository.MemberChatRoomRepository;

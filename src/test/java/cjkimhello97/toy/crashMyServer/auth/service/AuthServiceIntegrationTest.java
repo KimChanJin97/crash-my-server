@@ -21,12 +21,9 @@ import cjkimhello97.toy.crashMyServer.token.domain.RefreshToken;
 import cjkimhello97.toy.crashMyServer.token.exception.TokenException;
 import cjkimhello97.toy.crashMyServer.token.service.TokenService;
 import java.util.List;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 
 public class AuthServiceIntegrationTest extends IntegrationTest {
 
@@ -131,8 +128,8 @@ public class AuthServiceIntegrationTest extends IntegrationTest {
         // when : 회원가입시 닉네임이 존재하지 않다면
         RefreshToken secondRefreshToken = authService.signUp(BAD_NICKNAME_SIGNUP_REQUEST).refreshToken();
         System.out.println("두번째 = " + secondRefreshToken.getClaims());
-        System.out.println("두번째 = " + memberRepository.findByNickname(BAD_NICKNAME_SIGNUP_REQUEST.nickname()).get().getNickname());
-
+        System.out.println(
+                "두번째 = " + memberRepository.findByNickname(BAD_NICKNAME_SIGNUP_REQUEST.nickname()).get().getNickname());
 
         // then : 회원가입 후 로그인 처리되어야 하고 리프레시 토큰이 Redis에 저장되어야 한다
         RefreshToken firstSavedRefreshToken = tokenService.getRefreshTokenByMemberId(firstRefreshToken.getMemberId());
