@@ -72,7 +72,11 @@ dependencies {
 	testImplementation "org.mockito:mockito-core:3.+"
 
 	// Test Containers
-	testImplementation "org.testcontainers:testcontainers:1.18.3"
+	testImplementation "org.testcontainers:testcontainers:1.19.0"
+	testImplementation "org.testcontainers:testcontainers:1.19.0"
+	testImplementation "org.testcontainers:kafka:1.19.0"
+	testImplementation "org.testcontainers:mongodb:1.19.0"
+	testImplementation "com.redis.testcontainers:testcontainers-redis-junit:1.6.4"
 }
 
 tasks.named('test') {
