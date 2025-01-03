@@ -30,7 +30,7 @@ public class KafkaConsumerConfig {
     private final KafkaConstants kafkaConstants;
 
     @Bean
-    public ConcurrentKafkaListenerContainerFactory<String, KafkaClickRequest> kafkaClickRequestConcurrentKafkaListenerContainerFactory() {
+    public ConcurrentKafkaListenerContainerFactory<String, KafkaClickRequest> kafkaClickRequestContainerFactory() {
         ConcurrentKafkaListenerContainerFactory<String, KafkaClickRequest> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.getContainerProperties().setAckMode(MANUAL);
         factory.setConsumerFactory(kafkaClickRequestConsumerFactory());
@@ -54,13 +54,13 @@ public class KafkaConsumerConfig {
         consumerProps.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false"); // 오토 커밋 false
         consumerProps.put(ConsumerConfig.HEARTBEAT_INTERVAL_MS_CONFIG, 3000); // 하트비트 3초
         consumerProps.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, 10000); // 세션 타임아웃 10초
-        consumerProps.put(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, 600000); // 폴 인터벌 10분
-        consumerProps.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, 100); // 폴 레코드 100개
+        consumerProps.put(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, 300000); // 폴 인터벌 5분
+        consumerProps.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, 500); // 폴 레코드 500개
         return new DefaultKafkaConsumerFactory<>(consumerProps, new StringDeserializer(), deserializer);
     }
 
     @Bean
-    public ConcurrentKafkaListenerContainerFactory<String, KafkaClickRankRequest> kafkaClickRankRequestConcurrentKafkaListenerContainerFactory() {
+    public ConcurrentKafkaListenerContainerFactory<String, KafkaClickRankRequest> kafkaClickRankRequestContainerFactory() {
         ConcurrentKafkaListenerContainerFactory<String, KafkaClickRankRequest> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.getContainerProperties().setAckMode(MANUAL);
         factory.setConsumerFactory(kafkaClickRankRequestConsumerFactory());
@@ -84,23 +84,17 @@ public class KafkaConsumerConfig {
         consumerProps.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false"); // 오토 커밋 false
         consumerProps.put(ConsumerConfig.HEARTBEAT_INTERVAL_MS_CONFIG, 3000); // 하트비트 3초
         consumerProps.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, 10000); // 세션 타임아웃 10초
-        consumerProps.put(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, 600000); // 폴 인터벌 10분
-        consumerProps.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, 100); // 폴 레코드 100개
+        consumerProps.put(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, 300000); // 폴 인터벌 5분
+        consumerProps.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, 500); // 폴 레코드 500개
         return new DefaultKafkaConsumerFactory<>(consumerProps, new StringDeserializer(), deserializer);
     }
 
     @Bean
-    public ConcurrentKafkaListenerContainerFactory<String, KafkaChatMessageRequest> kafkaChatMessageRequestConcurrentKafkaListenerContainerFactory() {
+    public ConcurrentKafkaListenerContainerFactory<String, KafkaChatMessageRequest> kafkaChatMessageRequestContainerFactory() {
         ConcurrentKafkaListenerContainerFactory<String, KafkaChatMessageRequest> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.getContainerProperties().setAckMode(MANUAL);
         factory.setConsumerFactory(kafkaChatMessageRequestConsumerFactory());
         factory.setConcurrency(5);
-
-        FixedBackOff fixedBackOff = new FixedBackOff(0L, 0);
-        DefaultErrorHandler errorHandler = new DefaultErrorHandler(fixedBackOff);
-        errorHandler.addNotRetryableExceptions(ProcessedKafkaRequestException.class);
-        factory.setCommonErrorHandler(errorHandler);
-
         return factory;
     }
 
@@ -120,8 +114,8 @@ public class KafkaConsumerConfig {
         consumerProps.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false"); // 오토 커밋 false
         consumerProps.put(ConsumerConfig.HEARTBEAT_INTERVAL_MS_CONFIG, 3000); // 하트비트 3초
         consumerProps.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, 10000); // 세션 타임아웃 10초
-        consumerProps.put(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, 600000); // 폴 인터벌 10분
-        consumerProps.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, 100); // 폴 레코드 100개
+        consumerProps.put(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, 300000); // 폴 인터벌 5분
+        consumerProps.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, 500); // 폴 레코드 500개
         return new DefaultKafkaConsumerFactory<>(consumerProps, new StringDeserializer(), deserializer);
     }
 }
