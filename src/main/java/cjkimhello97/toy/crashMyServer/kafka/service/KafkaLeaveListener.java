@@ -1,16 +1,12 @@
 package cjkimhello97.toy.crashMyServer.kafka.service;
 
-import static cjkimhello97.toy.crashMyServer.kafka.exception.ProcessedKafkaRequestExceptionType.ALREADY_PROCESSED_MESSAGE;
-
-import cjkimhello97.toy.crashMyServer.kafka.domain.ProcessedKafkaRequest;
 import cjkimhello97.toy.crashMyServer.chat.dto.KafkaChatMessageRequest;
-import cjkimhello97.toy.crashMyServer.kafka.exception.ProcessedKafkaRequestException;
+import cjkimhello97.toy.crashMyServer.kafka.domain.ProcessedKafkaRequest;
 import cjkimhello97.toy.crashMyServer.kafka.repository.ProcessedKafkaRequestRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.Acknowledgment;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,15 +15,14 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class KafkaLeaveListener {
 
-    private final SimpMessagingTemplate messagingTemplate;
+    private final KafkaRequestSender kafkaRequestSender;
     private final ProcessedKafkaRequestRepository processedKafkaRequestRepository;
 
     @Transactional
     @KafkaListener(
-            id = "leaveListener0",
             groupId = "leaveListener",
             topics = "leave",
-            containerFactory = "kafkaChatMessageRequestConcurrentKafkaListenerContainerFactory"
+            containerFactory = "kafkaChatMessageRequestContainerFactory"
     )
     public void listenLeaveTopic(
             KafkaChatMessageRequest request,
@@ -36,13 +31,15 @@ public class KafkaLeaveListener {
         // 이미 처리한 적이 있는 메시지라면 예외 발생
         String uuid = request.getUuid();
         if (processedKafkaRequestRepository.existsByUuid(uuid)) {
-            throw new ProcessedKafkaRequestException(ALREADY_PROCESSED_MESSAGE);
+            acknowledgment.acknowledge();
+            return;
         }
-        // 메시지 처리(전공)
+        // 처리한 적이 없던 메시지이므로 처리
         Long chatRoomId = request.getChatRoomId();
-        messagingTemplate.convertAndSend("/sub/leave/" + chatRoomId, request);
+        kafkaRequestSender.convertAndSend("/sub/leave/" + chatRoomId, request);
         // 처리했다면 처리했음을 기록(저장)
         processedKafkaRequestRepository.save(new ProcessedKafkaRequest(uuid));
+        // 처리 및 저장했다면 커밋
         acknowledgment.acknowledge();
     }
 }
