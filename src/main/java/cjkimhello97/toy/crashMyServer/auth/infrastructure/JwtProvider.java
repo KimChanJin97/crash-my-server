@@ -50,9 +50,9 @@ public class JwtProvider {
     public AccessToken issueAccessToken(Long memberId) {
         String claims = Jwts.builder()
                 .claim("memberId", memberId)
-                .claim("uuid", UUID.randomUUID().toString())
                 .issuedAt(issuedAt())
                 .expiration(accessTokenExpiration())
+                .signWith(key)
                 .compact();
         return AccessToken.builder()
                 .memberId(memberId)
@@ -63,33 +63,15 @@ public class JwtProvider {
     public RefreshToken issueRefreshToken(Long memberId) {
         String claims = Jwts.builder()
                 .claim("memberId", memberId)
-                .claim("uuid", UUID.randomUUID().toString())
                 .issuedAt(issuedAt())
                 .expiration(refreshTokenExpiration())
+                .signWith(key)
                 .compact();
         RefreshToken refreshToken = RefreshToken.builder()
                 .memberId(memberId)
                 .claims(claims)
                 .build();
         return tokenService.saveRefreshToken(refreshToken);
-    }
-
-    private String claimsForAccessToken(Claims claims) {
-        return Jwts.builder()
-                .setClaims(claims)
-                .setIssuedAt(issuedAt())
-                .setExpiration(accessTokenExpiration())
-                .signWith(key, SignatureAlgorithm.HS256)
-                .compact();
-    }
-
-    private String claimsForRefreshToken(Claims claims) {
-        return Jwts.builder()
-                .setClaims(claims)
-                .setIssuedAt(issuedAt())
-                .setExpiration(refreshTokenExpiration())
-                .signWith(key, SignatureAlgorithm.HS256)
-                .compact();
     }
 
     private Date issuedAt() {
